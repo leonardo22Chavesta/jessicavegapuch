@@ -304,6 +304,7 @@ const faqs = [
               src={heroVideoSrc}
               poster={heroPoster}
               autoplay
+              muted
               loop
               playsinline
               webkit-playsinline
@@ -312,6 +313,13 @@ const faqs = [
               disableremoteplayback
               aria-label="Video principal del programa"
             ></video>
+            <button
+              type="button"
+              class="hero__unmute"
+              aria-label="Activar sonido del video"
+            >
+              Toca para oír
+            </button>
           </div>
 
           <a
@@ -763,69 +771,117 @@ const faqs = [
 
         const initHeroVideo = () => {
           const heroVideo = document.querySelector("video.hero__video");
+          const unmuteBtn = document.querySelector(".hero__unmute");
           if (!heroVideo) return;
 
           let soundUnlocked = false;
-          let waitingForGesture = false;
+          let starting = false;
 
-          const playVideo = (withSound) => {
-            heroVideo.muted = !withSound;
-            if (withSound) heroVideo.volume = 1;
+          heroVideo.playsInline = true;
+          heroVideo.setAttribute("playsinline", "");
+          heroVideo.setAttribute("webkit-playsinline", "");
+          heroVideo.defaultMuted = true;
+          heroVideo.muted = true;
+          heroVideo.setAttribute("muted", "");
+
+          const playMutedNow = () => {
+            if (soundUnlocked || starting) return;
+            starting = true;
+            heroVideo.muted = true;
+            heroVideo.setAttribute("muted", "");
             const playPromise = heroVideo.play();
-            if (playPromise && typeof playPromise.then === "function") {
-              return playPromise.then(() => true).catch(() => false);
+            if (playPromise && typeof playPromise.finally === "function") {
+              playPromise.catch(() => {}).finally(() => {
+                starting = false;
+              });
+            } else {
+              starting = false;
             }
-            return Promise.resolve(true);
           };
 
-          const unlockEvents = ["pointerdown", "touchstart", "keydown", "scroll"];
+          const hideUnmute = () => {
+            if (unmuteBtn) unmuteBtn.hidden = true;
+          };
 
-          const removeUnlockListeners = () => {
-            unlockEvents.forEach((eventName) => {
-              window.removeEventListener(eventName, unlockSound, true);
-            });
-            waitingForGesture = false;
+          const showUnmute = () => {
+            if (unmuteBtn) unmuteBtn.hidden = false;
           };
 
           const unlockSound = () => {
             if (soundUnlocked) return;
             soundUnlocked = true;
-            playVideo(true);
+            heroVideo.muted = false;
+            heroVideo.removeAttribute("muted");
+            heroVideo.defaultMuted = false;
+            heroVideo.volume = 1;
+            const playPromise = heroVideo.play();
+            if (playPromise && typeof playPromise.catch === "function") {
+              playPromise.catch(() => {});
+            }
+            hideUnmute();
             removeUnlockListeners();
           };
 
+          const unlockEvents = ["pointerdown", "touchstart", "keydown"];
+          const removeUnlockListeners = () => {
+            unlockEvents.forEach((eventName) => {
+              window.removeEventListener(eventName, unlockSound, true);
+            });
+          };
+
           const enableGestureUnlock = () => {
-            if (waitingForGesture || soundUnlocked) return;
-            waitingForGesture = true;
+            showUnmute();
             unlockEvents.forEach((eventName) => {
               window.addEventListener(eventName, unlockSound, {
                 capture: true,
                 passive: true,
               });
             });
-          };
-
-          const startHero = async () => {
-            const playedWithSound = await playVideo(true);
-            if (playedWithSound) {
-              soundUnlocked = true;
-              removeUnlockListeners();
-              return;
+            if (unmuteBtn) {
+              unmuteBtn.addEventListener("click", (event) => {
+                event.stopPropagation();
+                unlockSound();
+              });
             }
-            await playVideo(false);
-            enableGestureUnlock();
           };
 
-          startHero();
-          heroVideo.addEventListener("loadeddata", startHero, { once: true });
+          // En móvil: arranca YA en silencio (único modo fiable de autoplay).
+          playMutedNow();
+          enableGestureUnlock();
+
+          ["loadedmetadata", "loadeddata", "canplay", "canplaythrough"].forEach(
+            (eventName) => {
+              heroVideo.addEventListener(eventName, playMutedNow);
+            }
+          );
+
           heroVideo.addEventListener("pause", () => {
-            playVideo(soundUnlocked);
+            if (document.hidden) return;
+            if (soundUnlocked) {
+              heroVideo.muted = false;
+              heroVideo.play().catch(() => {});
+            } else {
+              playMutedNow();
+            }
           });
+
           document.addEventListener("visibilitychange", () => {
-            if (!document.hidden) playVideo(soundUnlocked);
+            if (document.hidden) return;
+            if (soundUnlocked) {
+              heroVideo.muted = false;
+              heroVideo.play().catch(() => {});
+            } else {
+              playMutedNow();
+            }
           });
+
           window.addEventListener("pageshow", () => {
-            playVideo(soundUnlocked);
+            if (soundUnlocked) {
+              heroVideo.muted = false;
+              heroVideo.play().catch(() => {});
+            } else {
+              playMutedNow();
+            }
           });
         };
 
@@ -1142,6 +1198,7 @@ const faqs = [
   }
 
   .hero__video-wrap {
+    position: relative;
     width: 100%;
     max-width: 850px;
     margin: 0 auto 1.75rem;
@@ -1162,6 +1219,32 @@ const faqs = [
     pointer-events: none;
     user-select: none;
     -webkit-user-select: none;
+  }
+
+  .hero__unmute {
+    position: absolute;
+    left: 50%;
+    bottom: 0.85rem;
+    z-index: 2;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid rgba(247, 241, 232, 0.45);
+    border-radius: 0;
+    background: rgba(28, 26, 24, 0.72);
+    color: #f7f1e8;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .hero__unmute[hidden] {
+    display: none;
   }
 
   /* —— Info strip (datos del programa) —— */
