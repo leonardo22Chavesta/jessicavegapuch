@@ -21,7 +21,12 @@ const heroVideoSrc = optimizeCloudinaryVideo(
   "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530930/Video_Funnel.mp4",
   { width: 960 }
 );
-const heroPoster = "/portadas/Video_Funel.png";
+const heroVideoSrcMobile = optimizeCloudinaryVideo(
+  "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530930/Video_Funnel.mp4",
+  { width: 720, eco: true }
+);
+const heroPoster = "/portadas/Video_Funel.webp";
+const heroPosterMobile = "/portadas/Video_Funel-sm.webp";
 
 const programaInfo = [
   {
@@ -53,7 +58,8 @@ const testimonios = [
       "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530175/1.mp4",
       { width: 540, eco: true }
     ),
-    poster: "/portadas/1.png",
+    poster: "/portadas/1.webp",
+    posterSm: "/portadas/1-sm.webp",
     startAt: 4,
   },
   {
@@ -62,7 +68,8 @@ const testimonios = [
       "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530302/2.mp4",
       { width: 540, eco: true }
     ),
-    poster: "/portadas/2.png",
+    poster: "/portadas/2.webp",
+    posterSm: "/portadas/2-sm.webp",
     startAt: 4,
   },
   {
@@ -71,7 +78,8 @@ const testimonios = [
       "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/3.mp4",
       { width: 540, eco: true }
     ),
-    poster: "/portadas/3.png",
+    poster: "/portadas/3.webp",
+    posterSm: "/portadas/3-sm.webp",
   },
   {
     nombre: "Isabel Zuñiga",
@@ -79,7 +87,8 @@ const testimonios = [
       "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530304/4.mp4",
       { width: 540, eco: true }
     ),
-    poster: "/portadas/4.png",
+    poster: "/portadas/4.webp",
+    posterSm: "/portadas/4-sm.webp",
   },
   {
     nombre: "Jimena Lindo",
@@ -87,7 +96,8 @@ const testimonios = [
       "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530301/5.mp4",
       { width: 540, eco: true }
     ),
-    poster: "/portadas/5.png",
+    poster: "/portadas/5.webp",
+    posterSm: "/portadas/5-sm.webp",
   },
   {
     nombre: "Ines Velasquez",
@@ -95,7 +105,8 @@ const testimonios = [
       "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/6.mp4",
       { width: 540, eco: true }
     ),
-    poster: "/portadas/6.png",
+    poster: "/portadas/6.webp",
+    posterSm: "/portadas/6-sm.webp",
   },
 ];
 
@@ -127,19 +138,27 @@ const paraQuien = [
 
 const paraQuienGaleria = [
   {
-    src: "/imagenes/meditacion-grupo.jpeg",
+    src: "/imagenes/meditacion-grupo.webp",
+    srcSm: "/imagenes/meditacion-grupo-sm.webp",
+    fallback: "/imagenes/meditacion-grupo.jpeg",
     alt: "Grupo en práctica de meditación",
   },
   {
-    src: "/imagenes/jessica-yoga.jpeg",
+    src: "/imagenes/jessica-yoga.webp",
+    srcSm: "/imagenes/jessica-yoga-sm.webp",
+    fallback: "/imagenes/jessica-yoga.jpeg",
     alt: "Práctica de yoga y presencia",
   },
   {
-    src: "/imagenes/taller-guiado.jpeg",
+    src: "/imagenes/taller-guiado.webp",
+    srcSm: "/imagenes/taller-guiado-sm.webp",
+    fallback: "/imagenes/taller-guiado.jpeg",
     alt: "Taller guiado del programa",
   },
   {
-    src: "/imagenes/taller-respiracion.jpeg",
+    src: "/imagenes/taller-respiracion.webp",
+    srcSm: "/imagenes/taller-respiracion-sm.webp",
+    fallback: "/imagenes/taller-respiracion.jpeg",
     alt: "Ejercicio de respiración y calma",
   },
 ];
@@ -302,13 +321,36 @@ const faqs = [
     <title>Jessica Vega Puch</title>
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
     <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-    <link rel="preload" as="video" href={heroVideoSrc} />
+    <link
+      rel="preload"
+      as="image"
+      href={heroPosterMobile}
+      type="image/webp"
+      media="(max-width: 640px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href={heroPoster}
+      type="image/webp"
+      media="(min-width: 641px)"
+      fetchpriority="high"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@400;500;600;700&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
   </head>
   <body>
     <div class="cinta-spacer" aria-hidden="true"></div>
@@ -348,12 +390,15 @@ const faqs = [
             <video
               class="hero__video"
               data-src={heroVideoSrc}
-              poster={heroPoster}
+              data-src-mobile={heroVideoSrcMobile}
+              data-poster={heroPoster}
+              data-poster-mobile={heroPosterMobile}
+              poster={heroPosterMobile}
               autoplay
               loop
               playsinline
               webkit-playsinline
-              preload="auto"
+              preload="none"
               disablepictureinpicture
               disableremoteplayback
               aria-label="Video principal del programa"
@@ -481,14 +526,22 @@ const faqs = [
         <div class="container">
           <div class="mentora__grid">
             <div class="mentora__photo">
-              <img
-                src="/imagenes/jessica-vega-puch.jpeg"
-                alt="Jessica Vega Puch, mentora de neurociencia y meditación"
-                width="640"
-                height="800"
-                loading="lazy"
-                decoding="async"
-              />
+              <picture>
+                <source
+                  type="image/webp"
+                  srcset="/imagenes/jessica-vega-puch-sm.webp 480w, /imagenes/jessica-vega-puch.webp 840w"
+                  sizes="(max-width: 900px) 90vw, 420px"
+                />
+                <img
+                  src="/imagenes/jessica-vega-puch.jpeg"
+                  alt="Jessica Vega Puch, mentora de neurociencia y meditación"
+                  width="640"
+                  height="800"
+                  loading="lazy"
+                  decoding="async"
+                  sizes="(max-width: 900px) 90vw, 420px"
+                />
+              </picture>
             </div>
 
             <div class="mentora__content">
@@ -535,8 +588,9 @@ const faqs = [
                   <video
                     class="lazy-video"
                     data-src={item.src}
+                    data-poster={item.poster}
+                    data-poster-mobile={item.posterSm}
                     data-start-at={item.startAt ?? undefined}
-                    poster={item.poster}
                     controls
                     muted
                     loop
@@ -597,14 +651,22 @@ const faqs = [
             {
               paraQuienGaleria.map((img) => (
                 <figure class="para-quien__shot">
-                  <img
-                    src={img.src}
-                    alt={img.alt}
-                    width="640"
-                    height="480"
-                    loading="lazy"
-                    decoding="async"
-                  />
+                  <picture>
+                    <source
+                      type="image/webp"
+                      srcset={`${img.srcSm} 480w, ${img.src} 800w`}
+                      sizes="(max-width: 900px) 45vw, 260px"
+                    />
+                    <img
+                      src={img.fallback}
+                      alt={img.alt}
+                      width="640"
+                      height="480"
+                      loading="lazy"
+                      decoding="async"
+                      sizes="(max-width: 900px) 45vw, 260px"
+                    />
+                  </picture>
                 </figure>
               ))
             }
@@ -823,8 +885,26 @@ const faqs = [
           history.scrollRestoration = "manual";
         }
 
-        const VIDEO_CACHE = "neuro-videos-v1";
+        const VIDEO_CACHE = "neuro-videos-v2";
         const cleanVideoUrl = (url) => String(url || "").split("#")[0];
+        const isMobileViewport = () =>
+          window.matchMedia("(max-width: 640px)").matches;
+        const isSlowConnection = () => {
+          const conn =
+            navigator.connection ||
+            navigator.mozConnection ||
+            navigator.webkitConnection;
+          if (!conn) return false;
+          if (conn.saveData) return true;
+          return ["slow-2g", "2g", "3g"].includes(conn.effectiveType || "");
+        };
+
+        const pickResponsiveUrl = (el, desktopAttr, mobileAttr) => {
+          const mobile = el.getAttribute(mobileAttr);
+          const desktop = el.getAttribute(desktopAttr);
+          if (isMobileViewport() && mobile) return mobile;
+          return desktop || mobile || "";
+        };
 
         const openVideoCache = async () => {
           if (!("caches" in window)) return null;
@@ -868,15 +948,18 @@ const faqs = [
         };
 
         const prefetchVideosInBackground = (urls) => {
+          // En móvil / red lenta no competimos con imágenes ni con el hero.
+          if (isMobileViewport() || isSlowConnection()) return;
+
           const run = () => {
             urls.forEach((url, index) => {
-              setTimeout(() => cacheVideoUrl(url), index * 700);
+              setTimeout(() => cacheVideoUrl(url), index * 1200);
             });
           };
           if ("requestIdleCallback" in window) {
-            requestIdleCallback(run, { timeout: 2500 });
+            requestIdleCallback(run, { timeout: 4000 });
           } else {
-            setTimeout(run, 1200);
+            setTimeout(run, 2500);
           }
         };
 
@@ -901,8 +984,18 @@ const faqs = [
           const unmuteBtn = document.querySelector(".hero__unmute");
           if (!heroVideo) return;
 
-          const remoteSrc =
-            heroVideo.getAttribute("data-src") || heroVideo.getAttribute("src");
+          const poster = pickResponsiveUrl(
+            heroVideo,
+            "data-poster",
+            "data-poster-mobile"
+          );
+          if (poster) heroVideo.setAttribute("poster", poster);
+
+          const remoteSrc = pickResponsiveUrl(
+            heroVideo,
+            "data-src",
+            "data-src-mobile"
+          );
           if (!remoteSrc) return;
 
           let soundUnlocked = false;
@@ -917,6 +1010,7 @@ const faqs = [
           heroVideo.muted = false;
           heroVideo.removeAttribute("muted");
           heroVideo.volume = 1;
+          heroVideo.preload = isSlowConnection() ? "none" : "metadata";
 
           const hideUnmute = () => {
             if (unmuteBtn) unmuteBtn.hidden = true;
@@ -1045,11 +1139,21 @@ const faqs = [
           const videos = document.querySelectorAll("video.lazy-video");
           if (!videos.length) return;
 
+          const assignPoster = (video) => {
+            if (video.getAttribute("poster")) return;
+            const poster = pickResponsiveUrl(
+              video,
+              "data-poster",
+              "data-poster-mobile"
+            );
+            if (poster) video.setAttribute("poster", poster);
+          };
+
           const testimonioUrls = Array.from(videos)
             .map((video) => video.getAttribute("data-src"))
             .filter(Boolean);
 
-          // Precarga en segundo plano para que al llegar ya estén en caché.
+          // Precarga en segundo plano solo en desktop con buena red.
           prefetchVideosInBackground(testimonioUrls);
 
           const applyStartAt = (video) => {
@@ -1070,13 +1174,17 @@ const faqs = [
             const dataSrc = video.getAttribute("data-src");
             if (!dataSrc) return;
 
+            assignPoster(video);
+
             if (!video.getAttribute("src")) {
               const playable = await getPlayableVideoUrl(dataSrc);
               video.setAttribute("src", playable);
               video.src = playable;
               video.load();
               applyStartAt(video);
-              cacheVideoUrl(dataSrc);
+              if (!isMobileViewport() && !isSlowConnection()) {
+                cacheVideoUrl(dataSrc);
+              }
             }
 
             const playPromise = video.play();
@@ -1086,9 +1194,23 @@ const faqs = [
           };
 
           if (!("IntersectionObserver" in window)) {
-            videos.forEach((video) => loadAndPlay(video));
+            videos.forEach((video) => {
+              assignPoster(video);
+              loadAndPlay(video);
+            });
             return;
           }
+
+          const posterObserver = new IntersectionObserver(
+            (entries, obs) => {
+              entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                assignPoster(entry.target);
+                obs.unobserve(entry.target);
+              });
+            },
+            { root: null, rootMargin: "600px 0px", threshold: 0.01 }
+          );
 
           const observer = new IntersectionObserver(
             (entries) => {
@@ -1103,12 +1225,15 @@ const faqs = [
             },
             {
               root: null,
-              rootMargin: "320px 0px",
+              rootMargin: isMobileViewport() ? "120px 0px" : "320px 0px",
               threshold: 0.1,
             }
           );
 
-          videos.forEach((video) => observer.observe(video));
+          videos.forEach((video) => {
+            posterObserver.observe(video);
+            observer.observe(video);
+          });
         };
 
         const boot = () => {
