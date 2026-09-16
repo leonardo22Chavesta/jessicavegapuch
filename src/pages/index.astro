@@ -335,8 +335,13 @@ const faqs = [
         <div class="container hero__inner">
           <p class="badge reveal">PROGRAMA DE LA ANSIEDAD A LA CALMA</p>
 
-          <h1 id="hero-title" class="reveal reveal--delay-1">
-            Recupera tu capacidad de vivir en el presente sin ansiedad, entrenando tu mente con un método basado en neurociencia.
+          <h1 id="hero-title" class="hero__title reveal reveal--delay-1">
+            <span class="hero__title-line"
+              >Recupera tu capacidad de vivir en el presente sin ansiedad,</span
+            >
+            <span class="hero__title-line"
+              >entrenando tu mente con un método basado en neurociencia.</span
+            >
           </h1>
 
           <div class="hero__video-wrap reveal reveal--delay-2">
@@ -1379,6 +1384,25 @@ const faqs = [
     flex-direction: column;
     align-items: center;
     text-align: center;
+    width: min(100% - 0.5rem, 1240px);
+    max-width: none;
+  }
+
+  .hero__title {
+    display: grid;
+    gap: 0.12em;
+    width: min(100vw - 0.35rem, 1220px);
+    max-width: none;
+    margin-inline: auto;
+    margin-bottom: 1.75rem;
+    /* Escala con el ancho para que cada línea quepa completa */
+    font-size: min(2.65rem, calc((100vw - 0.5rem) / 27));
+    line-height: 1.22;
+  }
+
+  .hero__title-line {
+    display: block;
+    white-space: nowrap;
   }
 
   .badge {
