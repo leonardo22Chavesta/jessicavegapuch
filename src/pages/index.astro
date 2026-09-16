@@ -1555,19 +1555,19 @@ const faqs = [
 
   .hero__title {
     display: grid;
-    gap: 0.12em;
-    width: min(100vw - 0.35rem, 1220px);
-    max-width: none;
+    gap: 0.18em;
+    width: 100%;
+    max-width: 22em;
     margin-inline: auto;
     margin-bottom: 1.75rem;
-    /* Escala con el ancho para que cada línea quepa completa */
-    font-size: min(3.05rem, calc((100vw - 0.75rem) / 23.5));
-    line-height: 1.2;
+    font-size: clamp(1.55rem, 6.2vw, 2.15rem);
+    line-height: 1.22;
+    text-wrap: balance;
   }
 
   .hero__title-line {
     display: block;
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .badge {
@@ -2518,14 +2518,13 @@ const faqs = [
     .hero__inner {
       width: min(100% - 1.75rem, 1240px);
     }
-
-    .hero__title {
-      width: min(100%, 1220px);
-      font-size: min(1.82rem, calc((100vw - 2rem) / 15.2));
-    }
   }
 
   @media (min-width: 640px) {
+    .hero__title {
+      max-width: 28em;
+      font-size: clamp(1.9rem, 3.6vw, 2.55rem);
+    }
     .info-strip {
       grid-template-columns: repeat(2, 1fr);
       gap: 0.75rem;
@@ -2551,6 +2550,17 @@ const faqs = [
   }
 
   @media (min-width: 900px) {
+    .hero__title {
+      width: min(100% - 1rem, 1100px);
+      max-width: none;
+      font-size: min(2.85rem, calc((100vw - 3rem) / 26));
+      gap: 0.12em;
+    }
+
+    .hero__title-line {
+      white-space: nowrap;
+    }
+
     .info-strip {
       grid-template-columns: repeat(4, 1fr);
       gap: 0.85rem;
