@@ -1,10 +1,26 @@
 ---
 const whatsappUrl =
   "https://wa.me/+51904201674?text=Hola%2C%20tengo%20dudas%20sobre%20el%20programa%20De%20la%20Ansiedad%20a%20la%20Calma";
-const checkoutUrl = "https://link.mercadopago.com.pe/jessicavegapuch";
+const checkoutUrl =
+  "https://www.mercadopago.com.pe/checkout/v1/payment/redirect/65f13ed3-e233-4009-ac26-d5cb6a049023/payment-option-form/?source=link&router-request-id=b4c102a0-4fa0-4547-ab00-114f8e449422&preference-id=3693503476-47e091d0-4a92-4e3f-9816-7a61faab7bfc&p=32bb6a20da7f691a41af57b5f28686dc";
 
-const heroVideoSrc =
-  "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530930/Video_Funnel.mp4";
+/** Comprime y adapta videos de Cloudinary para carga más rápida. */
+const optimizeCloudinaryVideo = (
+  url: string,
+  opts: { width?: number; eco?: boolean } = {}
+) => {
+  const { width = 960, eco = false } = opts;
+  const quality = eco ? "q_auto:eco" : "q_auto";
+  return url.replace(
+    "/video/upload/",
+    `/video/upload/w_${width},c_limit/${quality}/f_auto/`
+  );
+};
+
+const heroVideoSrc = optimizeCloudinaryVideo(
+  "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530930/Video_Funnel.mp4",
+  { width: 960 }
+);
 const heroPoster = "/portadas/Video_Funel.png";
 
 const programaInfo = [
@@ -33,34 +49,52 @@ const programaInfo = [
 const testimonios = [
   {
     nombre: "Marco Zunino",
-    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530175/1.mp4",
+    src: optimizeCloudinaryVideo(
+      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530175/1.mp4",
+      { width: 540, eco: true }
+    ),
     poster: "/portadas/1.png",
     startAt: 4,
   },
   {
     nombre: "Monica Belaunde",
-    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530302/2.mp4",
+    src: optimizeCloudinaryVideo(
+      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530302/2.mp4",
+      { width: 540, eco: true }
+    ),
     poster: "/portadas/2.png",
     startAt: 4,
   },
   {
     nombre: "Maria Katia Montalvan",
-    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/3.mp4",
+    src: optimizeCloudinaryVideo(
+      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/3.mp4",
+      { width: 540, eco: true }
+    ),
     poster: "/portadas/3.png",
   },
   {
     nombre: "Isabel Zuñiga",
-    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530304/4.mp4",
+    src: optimizeCloudinaryVideo(
+      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530304/4.mp4",
+      { width: 540, eco: true }
+    ),
     poster: "/portadas/4.png",
   },
   {
     nombre: "Jimena Lindo",
-    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530301/5.mp4",
+    src: optimizeCloudinaryVideo(
+      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530301/5.mp4",
+      { width: 540, eco: true }
+    ),
     poster: "/portadas/5.png",
   },
   {
     nombre: "Ines Velasquez",
-    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/6.mp4",
+    src: optimizeCloudinaryVideo(
+      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/6.mp4",
+      { width: 540, eco: true }
+    ),
     poster: "/portadas/6.png",
   },
 ];
@@ -165,7 +199,7 @@ const cintaItems = [
   "Inicio: 17 de octubre",
   "Clases presenciales (virtual opcional)",
   "Martes 7:30 pm · Jueves 9:00 pm",
-  "Inversión S/952 (antes S/1,120)",
+  "Inversión S/950 (antes S/1,250)",
   "Pago único o en 3 cuotas",
 ];
 
@@ -266,6 +300,9 @@ const faqs = [
       content="Programa de Neurociencia y Meditación con Jessica Vega Puch. De la ansiedad a la calma."
     />
     <title>Jessica Vega Puch</title>
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+    <link rel="preload" as="video" href={heroVideoSrc} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -305,7 +342,7 @@ const faqs = [
           <div class="hero__video-wrap reveal reveal--delay-2">
             <video
               class="hero__video"
-              src={heroVideoSrc}
+              data-src={heroVideoSrc}
               poster={heroPoster}
               autoplay
               loop
@@ -492,11 +529,8 @@ const faqs = [
                   </figcaption>
                   <video
                     class="lazy-video"
-                    data-src={
-                      item.startAt
-                        ? `${item.src}#t=${item.startAt}`
-                        : item.src
-                    }
+                    data-src={item.src}
+                    data-start-at={item.startAt ?? undefined}
                     poster={item.poster}
                     controls
                     muted
@@ -784,6 +818,63 @@ const faqs = [
           history.scrollRestoration = "manual";
         }
 
+        const VIDEO_CACHE = "neuro-videos-v1";
+        const cleanVideoUrl = (url) => String(url || "").split("#")[0];
+
+        const openVideoCache = async () => {
+          if (!("caches" in window)) return null;
+          try {
+            return await caches.open(VIDEO_CACHE);
+          } catch (_) {
+            return null;
+          }
+        };
+
+        const getPlayableVideoUrl = async (remoteUrl) => {
+          const url = cleanVideoUrl(remoteUrl);
+          const cache = await openVideoCache();
+          if (!cache) return url;
+          try {
+            const hit = await cache.match(url);
+            if (!hit || !hit.ok) return url;
+            const blob = await hit.blob();
+            if (!blob || !blob.size) return url;
+            return URL.createObjectURL(blob);
+          } catch (_) {
+            return url;
+          }
+        };
+
+        const cacheVideoUrl = async (remoteUrl) => {
+          const url = cleanVideoUrl(remoteUrl);
+          const cache = await openVideoCache();
+          if (!cache) return;
+          try {
+            const hit = await cache.match(url);
+            if (hit) return;
+            const res = await fetch(url, {
+              mode: "cors",
+              credentials: "omit",
+            });
+            if (res.ok) await cache.put(url, res.clone());
+          } catch (_) {
+            /* CORS o red: no bloquea la reproducción */
+          }
+        };
+
+        const prefetchVideosInBackground = (urls) => {
+          const run = () => {
+            urls.forEach((url, index) => {
+              setTimeout(() => cacheVideoUrl(url), index * 700);
+            });
+          };
+          if ("requestIdleCallback" in window) {
+            requestIdleCallback(run, { timeout: 2500 });
+          } else {
+            setTimeout(run, 1200);
+          }
+        };
+
         const resetScrollTop = () => {
           window.scrollTo(0, 0);
           document.documentElement.scrollTop = 0;
@@ -800,14 +891,19 @@ const faqs = [
           { once: true }
         );
 
-        const initHeroVideo = () => {
+        const initHeroVideo = async () => {
           const heroVideo = document.querySelector("video.hero__video");
           const unmuteBtn = document.querySelector(".hero__unmute");
           if (!heroVideo) return;
 
+          const remoteSrc =
+            heroVideo.getAttribute("data-src") || heroVideo.getAttribute("src");
+          if (!remoteSrc) return;
+
           let soundUnlocked = false;
           let starting = false;
           let needsGesture = false;
+          let srcReady = false;
 
           heroVideo.playsInline = true;
           heroVideo.setAttribute("playsinline", "");
@@ -866,7 +962,7 @@ const faqs = [
           };
 
           const playWithSound = () => {
-            if (soundUnlocked || starting) return;
+            if (!srcReady || soundUnlocked || starting) return;
             starting = true;
             heroVideo.muted = false;
             heroVideo.removeAttribute("muted");
@@ -882,7 +978,6 @@ const faqs = [
                   removeUnlockListeners();
                 })
                 .catch(() => {
-                  // El navegador bloqueó autoplay con sonido: video en silencio + botón.
                   heroVideo.muted = true;
                   heroVideo.setAttribute("muted", "");
                   heroVideo.play().catch(() => {});
@@ -897,7 +992,13 @@ const faqs = [
             }
           };
 
+          // Reproduce desde caché si ya se guardó; si no, desde Cloudinary y guarda para la próxima.
+          const playableSrc = await getPlayableVideoUrl(remoteSrc);
+          heroVideo.src = playableSrc;
+          heroVideo.load();
+          srcReady = true;
           playWithSound();
+          cacheVideoUrl(remoteSrc);
 
           ["loadedmetadata", "loadeddata", "canplay", "canplaythrough"].forEach(
             (eventName) => {
@@ -939,12 +1040,40 @@ const faqs = [
           const videos = document.querySelectorAll("video.lazy-video");
           if (!videos.length) return;
 
-          const loadAndPlay = (video) => {
+          const testimonioUrls = Array.from(videos)
+            .map((video) => video.getAttribute("data-src"))
+            .filter(Boolean);
+
+          // Precarga en segundo plano para que al llegar ya estén en caché.
+          prefetchVideosInBackground(testimonioUrls);
+
+          const applyStartAt = (video) => {
+            const startAt = Number(video.getAttribute("data-start-at") || 0);
+            if (!startAt || Number.isNaN(startAt)) return;
+            const seek = () => {
+              try {
+                if (Math.abs(video.currentTime - startAt) > 0.35) {
+                  video.currentTime = startAt;
+                }
+              } catch (_) {}
+            };
+            if (video.readyState >= 1) seek();
+            else video.addEventListener("loadedmetadata", seek, { once: true });
+          };
+
+          const loadAndPlay = async (video) => {
             const dataSrc = video.getAttribute("data-src");
-            if (dataSrc && !video.getAttribute("src")) {
-              video.setAttribute("src", dataSrc);
+            if (!dataSrc) return;
+
+            if (!video.getAttribute("src")) {
+              const playable = await getPlayableVideoUrl(dataSrc);
+              video.setAttribute("src", playable);
+              video.src = playable;
               video.load();
+              applyStartAt(video);
+              cacheVideoUrl(dataSrc);
             }
+
             const playPromise = video.play();
             if (playPromise && typeof playPromise.catch === "function") {
               playPromise.catch(() => {});
@@ -969,22 +1098,23 @@ const faqs = [
             },
             {
               root: null,
-              rootMargin: "80px 0px",
-              threshold: 0.25,
+              rootMargin: "320px 0px",
+              threshold: 0.1,
             }
           );
 
           videos.forEach((video) => observer.observe(video));
         };
 
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", () => {
-            initHeroVideo();
-            initLazyVideos();
-          });
-        } else {
+        const boot = () => {
           initHeroVideo();
           initLazyVideos();
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", boot);
+        } else {
+          boot();
         }
       })();
     </script>
