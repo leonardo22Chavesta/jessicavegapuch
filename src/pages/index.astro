@@ -10,7 +10,7 @@ const heroPoster = "/portadas/Video_Funel.png";
 const programaInfo = [
   {
     label: "Duración",
-    value: "30 días",
+    value: "12 sesiones",
     icon: "hourglass",
   },
   {
@@ -32,28 +32,34 @@ const programaInfo = [
 
 const testimonios = [
   {
+    nombre: "Marco Zunino",
     src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530175/1.mp4",
     poster: "/portadas/1.png",
     startAt: 4,
   },
   {
+    nombre: "Monica Belaunde",
     src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530302/2.mp4",
     poster: "/portadas/2.png",
     startAt: 4,
   },
   {
+    nombre: "Maria Katia Montalvan",
     src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/3.mp4",
     poster: "/portadas/3.png",
   },
   {
+    nombre: "Isabel Zuñiga",
     src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530304/4.mp4",
     poster: "/portadas/4.png",
   },
   {
+    nombre: "Jimena Lindo",
     src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530301/5.mp4",
     poster: "/portadas/5.png",
   },
   {
+    nombre: "Ines Velasquez",
     src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/6.mp4",
     poster: "/portadas/6.png",
   },
@@ -62,17 +68,15 @@ const testimonios = [
 const mentoraMetricas = [
   {
     cifra: "5 Libros",
-    texto: "3 de ellos best sellers sobre cómo vivir la vida sin ansiedad.",
+    texto: "Sobre cómo encontré en la práctica de la meditación , el yoga y el mindfulness un antidoto para mis problemas de ansiedad y depresión.",
   },
   {
     cifra: "+5,200",
-    texto:
-      "Mujeres ayudadas a conectar consigo mismas gracias a sus cursos y retiros.",
+    texto:"Mujeres ayudadas a conectar consigo mismas gracias a sus cursos y retiros de meditacion y mindfulness.",
   },
   {
     cifra: "10+ Años",
-    texto:
-      "Enseñando técnicas para mejorar la calidad de vida a mujeres con una historia como la tuya.",
+    texto: "Enseñando cursos de meditacion y mindfulness.",
   },
 ];
 
@@ -80,10 +84,11 @@ const paraQuien = [
   "Personas con ansiedad en su día a día.",
   "No pueden parar de comer por la ansiedad.",
   "Mucho estrés por el trabajo.",
-  "Pasas por un momento malo, que te agota.",
+  "Pasas por un mal momento que te agota.",
   "Sufres de ataques de pánico.",
   "No tienes un control total de tus emociones.",
   "Personas que solo buscan aprender Yoga o Meditación.",
+  "Tienes síntomas de psicosomaticos como Colon Irritable , Gastritis , Migrañas, Insomnio , Psoariasis y Fibromialgia.",
 ];
 
 const paraQuienGaleria = [
@@ -260,7 +265,7 @@ const faqs = [
       name="description"
       content="Programa de Neurociencia y Meditación con Jessica Vega Puch. De la ansiedad a la calma."
     />
-    <title>De la Ansiedad a la Calma | Jessica Vega Puch</title>
+    <title>Jessica Vega Puch</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -291,11 +296,10 @@ const faqs = [
       <!-- 1. HERO / VSL PRINCIPAL -->
       <section class="hero" id="inicio" aria-labelledby="hero-title">
         <div class="container hero__inner">
-          <p class="badge reveal">PROGRAMA DE ANSIEDAD A LA CALMA</p>
+          <p class="badge reveal">PROGRAMA DE LA ANSIEDAD A LA CALMA</p>
 
           <h1 id="hero-title" class="reveal reveal--delay-1">
-            Aprende a vivir una vida sin ansiedad y estar conectada contigo
-            mismo y con la realidad.
+            Recupera tu capacidad de vivir en el presente sin ansiedad, entrenando tu mente con un método basado en neurociencia.
           </h1>
 
           <div class="hero__video-wrap reveal reveal--delay-2">
@@ -304,7 +308,6 @@ const faqs = [
               src={heroVideoSrc}
               poster={heroPoster}
               autoplay
-              muted
               loop
               playsinline
               webkit-playsinline
@@ -316,6 +319,7 @@ const faqs = [
             <button
               type="button"
               class="hero__unmute"
+              hidden
               aria-label="Activar sonido del video"
             >
               Toca para oír
@@ -328,7 +332,7 @@ const faqs = [
             target="_blank"
             rel="noopener noreferrer"
           >
-            Sí, quiero vivir sin ansiedad
+            Sí, Quiero inscribirme con descuento
           </a>
           <p class="hero__secondary reveal reveal--delay-3">
             ¿Tienes dudas?
@@ -421,7 +425,14 @@ const faqs = [
         </div>
       </section>
 
-      <div class="divider" aria-hidden="true"></div>
+      <aside class="manifiesto" aria-label="Mensaje del programa">
+        <div class="container container--narrow">
+          <p class="manifiesto__frase">
+            No quiero que aprendas a meditar en una clase. Quiero que uses la
+            meditación como una herramienta para tu vida.
+          </p>
+        </div>
+      </aside>
 
       <!-- 2. MENTORA -->
       <section class="section mentora" aria-labelledby="mentora-name">
@@ -457,17 +468,28 @@ const faqs = [
         </div>
       </section>
 
+      <aside class="manifiesto" aria-label="Mensaje del programa">
+        <div class="container container--narrow">
+          <p class="manifiesto__frase">
+            Empieza a cuidar tu mente: de su estado depende el resto de tu vida.
+          </p>
+        </div>
+      </aside>
+
       <!-- 3. TESTIMONIOS (6 VIDEOS) -->
       <section class="section testimonios" aria-labelledby="testimonios-title">
         <div class="container">
           <h2 id="testimonios-title" class="section__title">
-            Historias de transformación y resultados
+            Historias reales de transformación y resultados
           </h2>
 
           <div class="testimonios__grid">
             {
               testimonios.map((item, i) => (
-                <div class="testimonio-media">
+                <figure class="testimonio-media">
+                  <figcaption class="testimonio-media__nombre">
+                    {item.nombre}
+                  </figcaption>
                   <video
                     class="lazy-video"
                     data-src={
@@ -482,14 +504,23 @@ const faqs = [
                     playsinline
                     webkit-playsinline
                     preload="none"
-                    aria-label={`Video testimonio ${i + 1}`}
+                    aria-label={`Testimonio de ${item.nombre}`}
                   ></video>
-                </div>
+                </figure>
               ))
             }
           </div>
         </div>
       </section>
+
+      <aside class="manifiesto" aria-label="Mensaje del programa">
+        <div class="container container--narrow">
+          <p class="manifiesto__frase">
+            Aprende a tener un botiquín de herramientas para cuando tu mente se
+            desborda en los días difíciles.
+          </p>
+        </div>
+      </aside>
 
       <!-- 4. ¿PARA QUIÉN ES ESTE CURSO? -->
       <section class="section para-quien" aria-labelledby="para-quien-title">
@@ -614,15 +645,15 @@ const faqs = [
                 </h3>
               <p class="oferta__precio">
                 <span class="oferta__precio-antes" aria-label="Precio regular">
-                  <span class="oferta__moneda">S/</span>1,120
+                  <span class="oferta__moneda">S/</span>1,250
                 </span>
                 <span class="oferta__precio-sep" aria-hidden="true">—</span>
                 <span class="oferta__precio-ahora">
-                  <span class="oferta__moneda">S/</span>952
+                  <span class="oferta__moneda">S/</span>950
                 </span>
               </p>
               <p class="oferta__inversion">
-                Inversión: S/952 (regular S/1,120) — Pago único o en 3 cuotas
+                Inversión: S/950 (regular S/1,250) — Pago único o en 3 cuotas
               </p>
             </header>
 
@@ -776,28 +807,15 @@ const faqs = [
 
           let soundUnlocked = false;
           let starting = false;
+          let needsGesture = false;
 
           heroVideo.playsInline = true;
           heroVideo.setAttribute("playsinline", "");
           heroVideo.setAttribute("webkit-playsinline", "");
-          heroVideo.defaultMuted = true;
-          heroVideo.muted = true;
-          heroVideo.setAttribute("muted", "");
-
-          const playMutedNow = () => {
-            if (soundUnlocked || starting) return;
-            starting = true;
-            heroVideo.muted = true;
-            heroVideo.setAttribute("muted", "");
-            const playPromise = heroVideo.play();
-            if (playPromise && typeof playPromise.finally === "function") {
-              playPromise.catch(() => {}).finally(() => {
-                starting = false;
-              });
-            } else {
-              starting = false;
-            }
-          };
+          heroVideo.defaultMuted = false;
+          heroVideo.muted = false;
+          heroVideo.removeAttribute("muted");
+          heroVideo.volume = 1;
 
           const hideUnmute = () => {
             if (unmuteBtn) unmuteBtn.hidden = true;
@@ -807,9 +825,16 @@ const faqs = [
             if (unmuteBtn) unmuteBtn.hidden = false;
           };
 
+          const removeUnlockListeners = () => {
+            ["pointerdown", "touchstart", "keydown"].forEach((eventName) => {
+              window.removeEventListener(eventName, unlockSound, true);
+            });
+          };
+
           const unlockSound = () => {
             if (soundUnlocked) return;
             soundUnlocked = true;
+            needsGesture = false;
             heroVideo.muted = false;
             heroVideo.removeAttribute("muted");
             heroVideo.defaultMuted = false;
@@ -822,16 +847,11 @@ const faqs = [
             removeUnlockListeners();
           };
 
-          const unlockEvents = ["pointerdown", "touchstart", "keydown"];
-          const removeUnlockListeners = () => {
-            unlockEvents.forEach((eventName) => {
-              window.removeEventListener(eventName, unlockSound, true);
-            });
-          };
-
           const enableGestureUnlock = () => {
+            if (needsGesture) return;
+            needsGesture = true;
             showUnmute();
-            unlockEvents.forEach((eventName) => {
+            ["pointerdown", "touchstart", "keydown"].forEach((eventName) => {
               window.addEventListener(eventName, unlockSound, {
                 capture: true,
                 passive: true,
@@ -845,13 +865,43 @@ const faqs = [
             }
           };
 
-          // En móvil: arranca YA en silencio (único modo fiable de autoplay).
-          playMutedNow();
-          enableGestureUnlock();
+          const playWithSound = () => {
+            if (soundUnlocked || starting) return;
+            starting = true;
+            heroVideo.muted = false;
+            heroVideo.removeAttribute("muted");
+            heroVideo.defaultMuted = false;
+            heroVideo.volume = 1;
+
+            const playPromise = heroVideo.play();
+            if (playPromise && typeof playPromise.then === "function") {
+              playPromise
+                .then(() => {
+                  soundUnlocked = true;
+                  hideUnmute();
+                  removeUnlockListeners();
+                })
+                .catch(() => {
+                  // El navegador bloqueó autoplay con sonido: video en silencio + botón.
+                  heroVideo.muted = true;
+                  heroVideo.setAttribute("muted", "");
+                  heroVideo.play().catch(() => {});
+                  enableGestureUnlock();
+                })
+                .finally(() => {
+                  starting = false;
+                });
+            } else {
+              starting = false;
+              soundUnlocked = !heroVideo.muted;
+            }
+          };
+
+          playWithSound();
 
           ["loadedmetadata", "loadeddata", "canplay", "canplaythrough"].forEach(
             (eventName) => {
-              heroVideo.addEventListener(eventName, playMutedNow);
+              heroVideo.addEventListener(eventName, playWithSound);
             }
           );
 
@@ -861,7 +911,7 @@ const faqs = [
               heroVideo.muted = false;
               heroVideo.play().catch(() => {});
             } else {
-              playMutedNow();
+              playWithSound();
             }
           });
 
@@ -871,7 +921,7 @@ const faqs = [
               heroVideo.muted = false;
               heroVideo.play().catch(() => {});
             } else {
-              playMutedNow();
+              playWithSound();
             }
           });
 
@@ -880,7 +930,7 @@ const faqs = [
               heroVideo.muted = false;
               heroVideo.play().catch(() => {});
             } else {
-              playMutedNow();
+              playWithSound();
             }
           });
         };
@@ -1164,6 +1214,29 @@ const faqs = [
       rgba(34, 34, 34, 0.22) 85%,
       transparent 100%
     );
+  }
+
+  /* —— Manifiesto (entre secciones) —— */
+  .manifiesto {
+    padding: 0.5rem 0 0.35rem;
+  }
+
+  .manifiesto .container {
+    text-align: center;
+  }
+
+  .manifiesto__frase {
+    margin: 0;
+    padding: 1.15rem 0;
+    border-top: 1px solid rgba(34, 34, 34, 0.14);
+    border-bottom: 1px solid rgba(34, 34, 34, 0.14);
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 3.2vw, 1.4rem);
+    font-weight: 500;
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--text);
+    text-wrap: balance;
   }
 
   /* —— Hero —— */
@@ -1488,10 +1561,49 @@ const faqs = [
   .testimonio-media {
     position: relative;
     width: 100%;
+    margin: 0;
     aspect-ratio: 9 / 16;
     overflow: hidden;
     border-radius: 8px;
     background: rgba(34, 34, 34, 0.06);
+  }
+
+  .testimonio-media::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    height: 32%;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.55) 0%,
+      rgba(0, 0, 0, 0.22) 55%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  .testimonio-media__nombre {
+    position: absolute;
+    top: 0.85rem;
+    left: 50%;
+    z-index: 2;
+    width: calc(100% - 1.25rem);
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    transform: translateX(-50%);
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 4.2vw, 1.6rem);
+    font-weight: 600;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+    text-align: center;
+    color: #fff;
+    text-wrap: balance;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
   }
 
   .testimonio-media video {
@@ -2091,6 +2203,11 @@ const faqs = [
     .testimonios__grid {
       grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
+    }
+
+    .testimonio-media__nombre {
+      top: 1rem;
+      font-size: 1.6rem;
     }
   }
 
