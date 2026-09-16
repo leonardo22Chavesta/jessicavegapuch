@@ -1,0 +1,14 @@
+# Configuración ngrok para la landing (Astro en puerto 4321)
+# El authtoken debe estar en tu config global de ngrok:
+#   ngrok config add-authtoken TU_TOKEN
+#
+# Cuando quieras compartir (tú lo corres):
+#   1. npm run dev
+#   2. ngrok start --config ./ngrok.yml neurociencia
+
+version: "3"
+
+endpoints:
+  - name: neurociencia
+    upstream:
+      url: http://localhost:4321
