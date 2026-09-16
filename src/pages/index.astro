@@ -300,16 +300,17 @@ const faqs = [
 
           <div class="hero__video-wrap reveal reveal--delay-2">
             <video
-              class="lazy-video hero__video"
-              data-src={heroVideoSrc}
+              class="hero__video"
+              src={heroVideoSrc}
               poster={heroPoster}
-              controls
-              muted
+              autoplay
               loop
               playsinline
               webkit-playsinline
-              preload="none"
-              aria-label="Video principal VSL"
+              preload="auto"
+              disablepictureinpicture
+              disableremoteplayback
+              aria-label="Video principal del programa"
             ></video>
           </div>
 
@@ -760,6 +761,74 @@ const faqs = [
           { once: true }
         );
 
+        const initHeroVideo = () => {
+          const heroVideo = document.querySelector("video.hero__video");
+          if (!heroVideo) return;
+
+          let soundUnlocked = false;
+          let waitingForGesture = false;
+
+          const playVideo = (withSound) => {
+            heroVideo.muted = !withSound;
+            if (withSound) heroVideo.volume = 1;
+            const playPromise = heroVideo.play();
+            if (playPromise && typeof playPromise.then === "function") {
+              return playPromise.then(() => true).catch(() => false);
+            }
+            return Promise.resolve(true);
+          };
+
+          const unlockEvents = ["pointerdown", "touchstart", "keydown", "scroll"];
+
+          const removeUnlockListeners = () => {
+            unlockEvents.forEach((eventName) => {
+              window.removeEventListener(eventName, unlockSound, true);
+            });
+            waitingForGesture = false;
+          };
+
+          const unlockSound = () => {
+            if (soundUnlocked) return;
+            soundUnlocked = true;
+            playVideo(true);
+            removeUnlockListeners();
+          };
+
+          const enableGestureUnlock = () => {
+            if (waitingForGesture || soundUnlocked) return;
+            waitingForGesture = true;
+            unlockEvents.forEach((eventName) => {
+              window.addEventListener(eventName, unlockSound, {
+                capture: true,
+                passive: true,
+              });
+            });
+          };
+
+          const startHero = async () => {
+            const playedWithSound = await playVideo(true);
+            if (playedWithSound) {
+              soundUnlocked = true;
+              removeUnlockListeners();
+              return;
+            }
+            await playVideo(false);
+            enableGestureUnlock();
+          };
+
+          startHero();
+          heroVideo.addEventListener("loadeddata", startHero, { once: true });
+          heroVideo.addEventListener("pause", () => {
+            playVideo(soundUnlocked);
+          });
+          document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) playVideo(soundUnlocked);
+          });
+          window.addEventListener("pageshow", () => {
+            playVideo(soundUnlocked);
+          });
+        };
+
         const initLazyVideos = () => {
           const videos = document.querySelectorAll("video.lazy-video");
           if (!videos.length) return;
@@ -803,8 +872,12 @@ const faqs = [
         };
 
         if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", initLazyVideos);
+          document.addEventListener("DOMContentLoaded", () => {
+            initHeroVideo();
+            initLazyVideos();
+          });
         } else {
+          initHeroVideo();
           initLazyVideos();
         }
       })();
@@ -1086,6 +1159,9 @@ const faqs = [
     object-fit: cover;
     border-radius: 16px;
     background: transparent;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   /* —— Info strip (datos del programa) —— */
