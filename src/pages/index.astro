@@ -7,13 +7,13 @@ const checkoutUrl =
 /** Comprime y adapta videos de Cloudinary para carga más rápida. */
 const optimizeCloudinaryVideo = (
   url: string,
-  opts: { width?: number; eco?: boolean } = {}
+  opts: { width?: number; eco?: boolean; low?: boolean } = {}
 ) => {
-  const { width = 960, eco = false } = opts;
-  const quality = eco ? "q_auto:eco" : "q_auto";
+  const { width = 960, eco = false, low = false } = opts;
+  const quality = low ? "q_auto:low" : eco ? "q_auto:eco" : "q_auto";
   return url.replace(
     "/video/upload/",
-    `/video/upload/w_${width},c_limit/${quality}/f_auto/`
+    `/video/upload/w_${width},c_limit,${quality},f_auto/`
   );
 };
 
@@ -51,64 +51,55 @@ const programaInfo = [
   },
 ];
 
-const testimonios = [
+const testimonioVideos = [
   {
     nombre: "Marco Zunino",
-    src: optimizeCloudinaryVideo(
-      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530175/1.mp4",
-      { width: 540, eco: true }
-    ),
-    poster: "/portadas/1.webp",
-    posterSm: "/portadas/1-sm.webp",
+    id: "1",
     startAt: 4,
   },
   {
     nombre: "Monica Belaunde",
-    src: optimizeCloudinaryVideo(
-      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530302/2.mp4",
-      { width: 540, eco: true }
-    ),
-    poster: "/portadas/2.webp",
-    posterSm: "/portadas/2-sm.webp",
+    id: "2",
     startAt: 4,
   },
   {
     nombre: "Maria Katia Montalvan",
-    src: optimizeCloudinaryVideo(
-      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/3.mp4",
-      { width: 540, eco: true }
-    ),
-    poster: "/portadas/3.webp",
-    posterSm: "/portadas/3-sm.webp",
+    id: "3",
   },
   {
     nombre: "Isabel Zuñiga",
-    src: optimizeCloudinaryVideo(
-      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530304/4.mp4",
-      { width: 540, eco: true }
-    ),
-    poster: "/portadas/4.webp",
-    posterSm: "/portadas/4-sm.webp",
+    id: "4",
   },
   {
     nombre: "Jimena Lindo",
-    src: optimizeCloudinaryVideo(
-      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530301/5.mp4",
-      { width: 540, eco: true }
-    ),
-    poster: "/portadas/5.webp",
-    posterSm: "/portadas/5-sm.webp",
+    id: "5",
   },
   {
     nombre: "Ines Velasquez",
-    src: optimizeCloudinaryVideo(
-      "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/6.mp4",
-      { width: 540, eco: true }
-    ),
-    poster: "/portadas/6.webp",
-    posterSm: "/portadas/6-sm.webp",
+    id: "6",
   },
-];
+] as const;
+
+const testimonioCloudinaryIds: Record<string, string> = {
+  "1": "v1789530175/1.mp4",
+  "2": "v1789530302/2.mp4",
+  "3": "v1789530303/3.mp4",
+  "4": "v1789530304/4.mp4",
+  "5": "v1789530301/5.mp4",
+  "6": "v1789530303/6.mp4",
+};
+
+const testimonios = testimonioVideos.map((item) => {
+  const base = `https://res.cloudinary.com/dh3ah77m1/video/upload/${testimonioCloudinaryIds[item.id]}`;
+  return {
+    nombre: item.nombre,
+    src: optimizeCloudinaryVideo(base, { width: 480, eco: true }),
+    srcMobile: optimizeCloudinaryVideo(base, { width: 360, low: true }),
+    poster: `/portadas/${item.id}.webp`,
+    posterSm: `/portadas/${item.id}-sm.webp`,
+    startAt: "startAt" in item ? item.startAt : undefined,
+  };
+});
 
 const mentoraMetricas = [
   {
@@ -588,9 +579,11 @@ const faqs = [
                   <video
                     class="lazy-video"
                     data-src={item.src}
+                    data-src-mobile={item.srcMobile}
                     data-poster={item.poster}
                     data-poster-mobile={item.posterSm}
                     data-start-at={item.startAt ?? undefined}
+                    poster={item.posterSm}
                     controls
                     muted
                     loop
@@ -885,18 +878,20 @@ const faqs = [
           history.scrollRestoration = "manual";
         }
 
-        const VIDEO_CACHE = "neuro-videos-v2";
+        const VIDEO_CACHE = "neuro-videos-v3";
         const cleanVideoUrl = (url) => String(url || "").split("#")[0];
         const isMobileViewport = () =>
           window.matchMedia("(max-width: 640px)").matches;
+        const getConnection = () =>
+          navigator.connection ||
+          navigator.mozConnection ||
+          navigator.webkitConnection ||
+          null;
         const isSlowConnection = () => {
-          const conn =
-            navigator.connection ||
-            navigator.mozConnection ||
-            navigator.webkitConnection;
+          const conn = getConnection();
           if (!conn) return false;
           if (conn.saveData) return true;
-          return ["slow-2g", "2g", "3g"].includes(conn.effectiveType || "");
+          return ["slow-2g", "2g"].includes(conn.effectiveType || "");
         };
 
         const pickResponsiveUrl = (el, desktopAttr, mobileAttr) => {
@@ -915,18 +910,18 @@ const faqs = [
           }
         };
 
-        const getPlayableVideoUrl = async (remoteUrl) => {
+        const getCachedBlobUrl = async (remoteUrl) => {
           const url = cleanVideoUrl(remoteUrl);
           const cache = await openVideoCache();
-          if (!cache) return url;
+          if (!cache) return null;
           try {
             const hit = await cache.match(url);
-            if (!hit || !hit.ok) return url;
+            if (!hit || !hit.ok) return null;
             const blob = await hit.blob();
-            if (!blob || !blob.size) return url;
+            if (!blob || !blob.size) return null;
             return URL.createObjectURL(blob);
           } catch (_) {
-            return url;
+            return null;
           }
         };
 
@@ -944,22 +939,6 @@ const faqs = [
             if (res.ok) await cache.put(url, res.clone());
           } catch (_) {
             /* CORS o red: no bloquea la reproducción */
-          }
-        };
-
-        const prefetchVideosInBackground = (urls) => {
-          // En móvil / red lenta no competimos con imágenes ni con el hero.
-          if (isMobileViewport() || isSlowConnection()) return;
-
-          const run = () => {
-            urls.forEach((url, index) => {
-              setTimeout(() => cacheVideoUrl(url), index * 1200);
-            });
-          };
-          if ("requestIdleCallback" in window) {
-            requestIdleCallback(run, { timeout: 4000 });
-          } else {
-            setTimeout(run, 2500);
           }
         };
 
@@ -1010,7 +989,7 @@ const faqs = [
           heroVideo.muted = false;
           heroVideo.removeAttribute("muted");
           heroVideo.volume = 1;
-          heroVideo.preload = isSlowConnection() ? "none" : "metadata";
+          heroVideo.preload = "auto";
 
           const hideUnmute = () => {
             if (unmuteBtn) unmuteBtn.hidden = true;
@@ -1091,13 +1070,13 @@ const faqs = [
             }
           };
 
-          // Reproduce desde caché si ya se guardó; si no, desde Cloudinary y guarda para la próxima.
-          const playableSrc = await getPlayableVideoUrl(remoteSrc);
-          heroVideo.src = playableSrc;
+          // URL remota primero (play inmediato); caché blob solo si ya existe.
+          const cached = await getCachedBlobUrl(remoteSrc);
+          heroVideo.src = cached || remoteSrc;
           heroVideo.load();
           srcReady = true;
           playWithSound();
-          cacheVideoUrl(remoteSrc);
+          if (!cached) cacheVideoUrl(remoteSrc);
 
           ["loadedmetadata", "loadeddata", "canplay", "canplaythrough"].forEach(
             (eventName) => {
@@ -1133,14 +1112,17 @@ const faqs = [
               playWithSound();
             }
           });
+
+          return heroVideo;
         };
 
-        const initLazyVideos = () => {
-          const videos = document.querySelectorAll("video.lazy-video");
+        const initLazyVideos = (heroVideo) => {
+          const videos = Array.from(
+            document.querySelectorAll("video.lazy-video")
+          );
           if (!videos.length) return;
 
           const assignPoster = (video) => {
-            if (video.getAttribute("poster")) return;
             const poster = pickResponsiveUrl(
               video,
               "data-poster",
@@ -1149,12 +1131,8 @@ const faqs = [
             if (poster) video.setAttribute("poster", poster);
           };
 
-          const testimonioUrls = Array.from(videos)
-            .map((video) => video.getAttribute("data-src"))
-            .filter(Boolean);
-
-          // Precarga en segundo plano solo en desktop con buena red.
-          prefetchVideosInBackground(testimonioUrls);
+          // Posters ya en HTML; afinar desktop vs móvil al instante.
+          videos.forEach(assignPoster);
 
           const applyStartAt = (video) => {
             const startAt = Number(video.getAttribute("data-start-at") || 0);
@@ -1170,54 +1148,119 @@ const faqs = [
             else video.addEventListener("loadedmetadata", seek, { once: true });
           };
 
-          const loadAndPlay = async (video) => {
-            const dataSrc = video.getAttribute("data-src");
-            if (!dataSrc) return;
+          const attachSource = async (video, { play = false } = {}) => {
+            const remoteSrc = pickResponsiveUrl(
+              video,
+              "data-src",
+              "data-src-mobile"
+            );
+            if (!remoteSrc) return;
 
             assignPoster(video);
 
             if (!video.getAttribute("src")) {
-              const playable = await getPlayableVideoUrl(dataSrc);
-              video.setAttribute("src", playable);
-              video.src = playable;
+              // No esperamos el blob: prioridad a reproducción / buffer rápido.
+              video.preload = "auto";
+              video.src = remoteSrc;
+              video.setAttribute("src", remoteSrc);
               video.load();
               applyStartAt(video);
-              if (!isMobileViewport() && !isSlowConnection()) {
-                cacheVideoUrl(dataSrc);
-              }
+              getCachedBlobUrl(remoteSrc).then((cached) => {
+                if (!cached || video.dataset.swapped === "1") return;
+                // Solo swap si aún no empezó a reproducir con buffer.
+                if (video.readyState < 2 && video.paused) {
+                  video.dataset.swapped = "1";
+                  video.src = cached;
+                  video.load();
+                  applyStartAt(video);
+                }
+              });
+              cacheVideoUrl(remoteSrc);
             }
 
-            const playPromise = video.play();
-            if (playPromise && typeof playPromise.catch === "function") {
-              playPromise.catch(() => {});
+            if (play) {
+              const playPromise = video.play();
+              if (playPromise && typeof playPromise.catch === "function") {
+                playPromise.catch(() => {});
+              }
             }
           };
 
-          if (!("IntersectionObserver" in window)) {
-            videos.forEach((video) => {
-              assignPoster(video);
-              loadAndPlay(video);
+          const waitForBuffer = (video, ms = 8000) =>
+            new Promise((resolve) => {
+              if (video.readyState >= 3) {
+                resolve();
+                return;
+              }
+              const done = () => {
+                cleanup();
+                resolve();
+              };
+              const cleanup = () => {
+                video.removeEventListener("canplay", done);
+                video.removeEventListener("canplaythrough", done);
+                clearTimeout(timer);
+              };
+              video.addEventListener("canplay", done, { once: true });
+              video.addEventListener("canplaythrough", done, { once: true });
+              const timer = setTimeout(done, ms);
             });
+
+          // Precarga secuencial: cuando el usuario toque play, ya hay buffer.
+          const warmVideos = async () => {
+            const limit = isSlowConnection() ? 2 : videos.length;
+            for (let i = 0; i < limit; i++) {
+              const video = videos[i];
+              if (video.dataset.warmed === "1") continue;
+              video.dataset.warmed = "1";
+              await attachSource(video, { play: false });
+              await waitForBuffer(video, isMobileViewport() ? 7000 : 5000);
+            }
+          };
+
+          const startWarmWhenReady = () => {
+            const kickoff = () => {
+              const run = () => {
+                warmVideos();
+              };
+              if ("requestIdleCallback" in window) {
+                requestIdleCallback(run, { timeout: 1800 });
+              } else {
+                setTimeout(run, 600);
+              }
+            };
+
+            if (!heroVideo) {
+              kickoff();
+              return;
+            }
+
+            if (heroVideo.readyState >= 3) {
+              // Hero ya con buffer: liberamos un poco de red y arrancamos.
+              setTimeout(kickoff, 350);
+            } else {
+              heroVideo.addEventListener("canplay", () => setTimeout(kickoff, 350), {
+                once: true,
+              });
+              // Fallback si el hero tarda o falla.
+              setTimeout(kickoff, 2200);
+            }
+          };
+
+          startWarmWhenReady();
+
+          if (!("IntersectionObserver" in window)) {
+            videos.forEach((video) => attachSource(video, { play: true }));
             return;
           }
-
-          const posterObserver = new IntersectionObserver(
-            (entries, obs) => {
-              entries.forEach((entry) => {
-                if (!entry.isIntersecting) return;
-                assignPoster(entry.target);
-                obs.unobserve(entry.target);
-              });
-            },
-            { root: null, rootMargin: "600px 0px", threshold: 0.01 }
-          );
 
           const observer = new IntersectionObserver(
             (entries) => {
               entries.forEach((entry) => {
                 const video = entry.target;
                 if (entry.isIntersecting) {
-                  loadAndPlay(video);
+                  video.dataset.warmed = "1";
+                  attachSource(video, { play: true });
                 } else {
                   video.pause();
                 }
@@ -1225,20 +1268,17 @@ const faqs = [
             },
             {
               root: null,
-              rootMargin: isMobileViewport() ? "120px 0px" : "320px 0px",
-              threshold: 0.1,
+              rootMargin: isMobileViewport() ? "400px 0px" : "480px 0px",
+              threshold: 0.05,
             }
           );
 
-          videos.forEach((video) => {
-            posterObserver.observe(video);
-            observer.observe(video);
-          });
+          videos.forEach((video) => observer.observe(video));
         };
 
-        const boot = () => {
-          initHeroVideo();
-          initLazyVideos();
+        const boot = async () => {
+          const heroVideo = await initHeroVideo();
+          initLazyVideos(heroVideo || null);
         };
 
         if (document.readyState === "loading") {
@@ -1443,12 +1483,12 @@ const faqs = [
   }
 
   .container {
-    width: min(100% - 2rem, var(--max));
+    width: min(100% - 2.75rem, var(--max));
     margin-inline: auto;
   }
 
   .container--narrow {
-    width: min(100% - 2rem, var(--narrow));
+    width: min(100% - 2.75rem, var(--narrow));
   }
 
   .section {
@@ -1509,7 +1549,7 @@ const faqs = [
     flex-direction: column;
     align-items: center;
     text-align: center;
-    width: min(100% - 0.5rem, 1240px);
+    width: min(100% - 1.5rem, 1240px);
     max-width: none;
   }
 
@@ -1521,8 +1561,8 @@ const faqs = [
     margin-inline: auto;
     margin-bottom: 1.75rem;
     /* Escala con el ancho para que cada línea quepa completa */
-    font-size: min(2.65rem, calc((100vw - 0.5rem) / 27));
-    line-height: 1.22;
+    font-size: min(3.05rem, calc((100vw - 0.75rem) / 23.5));
+    line-height: 1.2;
   }
 
   .hero__title-line {
@@ -1832,7 +1872,7 @@ const faqs = [
     grid-template-columns: repeat(2, 1fr);
     gap: 0.85rem;
     align-items: stretch;
-    width: 88%;
+    width: 100%;
     max-width: 920px;
     margin-inline: auto;
   }
@@ -2465,6 +2505,26 @@ const faqs = [
   }
 
   /* —— Responsive —— */
+  @media (max-width: 639px) {
+    .container,
+    .container--narrow {
+      width: min(100% - 3rem, var(--max));
+    }
+
+    .container--narrow {
+      width: min(100% - 3rem, var(--narrow));
+    }
+
+    .hero__inner {
+      width: min(100% - 1.75rem, 1240px);
+    }
+
+    .hero__title {
+      width: min(100%, 1220px);
+      font-size: min(1.82rem, calc((100vw - 2rem) / 15.2));
+    }
+  }
+
   @media (min-width: 640px) {
     .info-strip {
       grid-template-columns: repeat(2, 1fr);
