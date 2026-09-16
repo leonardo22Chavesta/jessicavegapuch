@@ -3,19 +3,37 @@ const whatsappUrl =
   "https://wa.me/+51904201674?text=Hola%2C%20tengo%20dudas%20sobre%20el%20programa%20De%20la%20Ansiedad%20a%20la%20Calma";
 const checkoutUrl = "https://link.mercadopago.com.pe/jessicavegapuch";
 
+const heroVideoSrc =
+  "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530930/Video_Funnel.mp4";
+const heroPoster = "/portadas/Video_Funel.png";
+
 const testimonios = [
   {
     src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530175/1.mp4",
+    poster: "/portadas/1.png",
     startAt: 4,
   },
   {
     src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530302/2.mp4",
+    poster: "/portadas/2.png",
     startAt: 4,
   },
-  { src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/3.mp4" },
-  { src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530304/4.mp4" },
-  { src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530301/5.mp4" },
-  { src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/6.mp4" },
+  {
+    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/3.mp4",
+    poster: "/portadas/3.png",
+  },
+  {
+    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530304/4.mp4",
+    poster: "/portadas/4.png",
+  },
+  {
+    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530301/5.mp4",
+    poster: "/portadas/5.png",
+  },
+  {
+    src: "https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530303/6.mp4",
+    poster: "/portadas/6.png",
+  },
 ];
 
 const mentoraMetricas = [
@@ -211,16 +229,20 @@ const faqs = [
             mismo y con la realidad.
           </h1>
 
-          <video
-            class="reveal reveal--delay-2"
-            src="https://res.cloudinary.com/dh3ah77m1/video/upload/v1789530930/Video_Funnel.mp4"
-            controls
-            playsinline
-            preload="metadata"
-            style="width: 100%; max-width: 850px; border-radius: 16px; display: block; margin: 0 auto 1.75rem;"
-            aria-label="Video principal VSL"
-          ></video>
-
+          <div class="hero__video-wrap reveal reveal--delay-2">
+            <video
+              class="lazy-video hero__video"
+              data-src={heroVideoSrc}
+              poster={heroPoster}
+              controls
+              muted
+              loop
+              playsinline
+              webkit-playsinline
+              preload="none"
+              aria-label="Video principal VSL"
+            ></video>
+          </div>
           <a
             class="btn btn--primary btn--wide reveal reveal--delay-3"
             href={checkoutUrl}
@@ -229,7 +251,6 @@ const faqs = [
           >
             Sí, quiero vivir sin ansiedad
           </a>
-
           <p class="hero__secondary reveal reveal--delay-3">
             ¿Tienes dudas?
             <a
@@ -292,20 +313,21 @@ const faqs = [
               testimonios.map((item, i) => (
                 <div class="testimonio-media">
                   <video
+                    class="lazy-video"
+                    data-src={
+                      item.startAt
+                        ? `${item.src}#t=${item.startAt}`
+                        : item.src
+                    }
+                    poster={item.poster}
                     controls
+                    muted
+                    loop
                     playsinline
-                    preload="metadata"
+                    webkit-playsinline
+                    preload="none"
                     aria-label={`Video testimonio ${i + 1}`}
-                  >
-                    <source
-                      src={
-                        item.startAt
-                          ? `${item.src}#t=${item.startAt}`
-                          : item.src
-                      }
-                      type="video/mp4"
-                    />
-                  </video>
+                  ></video>
                 </div>
               ))
             }
@@ -580,6 +602,58 @@ const faqs = [
         ></path>
       </svg>
     </a>
+
+    <script is:inline>
+      (() => {
+        const initLazyVideos = () => {
+          const videos = document.querySelectorAll("video.lazy-video");
+          if (!videos.length) return;
+
+          const loadAndPlay = (video) => {
+            const dataSrc = video.getAttribute("data-src");
+            if (dataSrc && !video.getAttribute("src")) {
+              video.setAttribute("src", dataSrc);
+              video.load();
+            }
+            const playPromise = video.play();
+            if (playPromise && typeof playPromise.catch === "function") {
+              playPromise.catch(() => {});
+            }
+          };
+
+          if (!("IntersectionObserver" in window)) {
+            videos.forEach((video) => loadAndPlay(video));
+            return;
+          }
+
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                const video = entry.target;
+                if (entry.isIntersecting) {
+                  loadAndPlay(video);
+                } else {
+                  video.pause();
+                }
+              });
+            },
+            {
+              root: null,
+              rootMargin: "80px 0px",
+              threshold: 0.25,
+            }
+          );
+
+          videos.forEach((video) => observer.observe(video));
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initLazyVideos);
+        } else {
+          initLazyVideos();
+        }
+      })();
+    </script>
   </body>
 </html>
 
@@ -764,6 +838,26 @@ const faqs = [
     margin: 1.15rem 0 0;
     font-size: 0.98rem;
     color: var(--text-muted);
+  }
+
+  .hero__video-wrap {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto 1.75rem;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 16px;
+    background: rgba(34, 34, 34, 0.06);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .hero__video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: 16px;
+    background: transparent;
   }
 
   .link-whatsapp {
