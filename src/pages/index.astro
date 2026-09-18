@@ -3,6 +3,10 @@ const whatsappUrl =
   "https://wa.me/+51904201674?text=Hola%2C%20tengo%20dudas%20sobre%20el%20programa%20De%20la%20Ansiedad%20a%20la%20Calma";
 const checkoutUrl =
   "https://www.mercadopago.com.pe/checkout/v1/payment/redirect/65f13ed3-e233-4009-ac26-d5cb6a049023/payment-option-form/?source=link&router-request-id=b4c102a0-4fa0-4547-ab00-114f8e449422&preference-id=3693503476-47e091d0-4a92-4e3f-9816-7a61faab7bfc&p=32bb6a20da7f691a41af57b5f28686dc";
+/** Agenda / booking (15 min). */
+const calendlyUrl =
+  "https://link.rodrigoalvarezaguilar.com/widget/booking/dbY9KgcEkhy5CfzsHTHA";
+const ofertaAnchor = "#reservar";
 
 /** Comprime y adapta videos de Cloudinary para carga más rápida. */
 const optimizeCloudinaryVideo = (
@@ -104,15 +108,33 @@ const testimonios = testimonioVideos.map((item) => {
 const mentoraMetricas = [
   {
     cifra: "5 Libros",
-    texto: "Sobre cómo encontré en la práctica de la meditación , el yoga y el mindfulness un antidoto para mis problemas de ansiedad y depresión.",
+    texto: "Sobre como superar la ansiedad y la depresión a través de la meditación, el yoga y el mindfulness.",
   },
   {
     cifra: "+5,200",
-    texto:"Mujeres ayudadas a conectar consigo mismas gracias a sus cursos y retiros de meditacion y mindfulness.",
+    texto:"Mujeres que aprendieron a conectar con su cuerpo y sus emociones a través de la meditación.",
   },
   {
     cifra: "10+ Años",
-    texto: "Enseñando cursos de meditacion y mindfulness.",
+    texto: "Más de una década combinando experiencia personal y herramientas basadas en evidencia.",
+  },
+];
+
+const mentoraFormacion = [
+  {
+    titulo: "Certificación en Mindful Self-Compassion (MSC)",
+    texto:
+      "Formada por el Dr. Christopher Germer, Ph.D., cofundador del Center for Mindful Self-Compassion.",
+  },
+  {
+    titulo: "Certificaciones en MBSR y MBCT",
+    texto:
+      "Enfoques clínicos para el manejo del estrés, la ansiedad y la depresión.",
+  },
+  {
+    titulo: "+400 horas de formación en yoga",
+    texto:
+      "Dos Yoga Teacher Trainings de 200h —Buenos Aires (2011) y Tailandia (2015)— y formación con monjes budistas en Tailandia (2025).",
   },
 ];
 
@@ -156,34 +178,42 @@ const paraQuienGaleria = [
 
 const pilares = [
   {
+    id: 1,
     title: "Mapa de tu Mente Ansiosa",
     text: "Entender qué te pasa y por qué (15 lecturas para profundizar + cuadernillo de trabajo y registro).",
   },
   {
+    id: 2,
     title: "Botiquín de Emergencia Emocional",
     text: "Técnicas para calmarte en crisis o pánico (10 audios guiados).",
   },
   {
+    id: 3,
     title: "Alimentación Antiansiedad",
-    text: "Qué comer y cocinar para bajar la ansiedad (planes de alimentación + suplementos naturales).",
+    text: 'Qué comer y cocinar para bajar la ansiedad <strong>(planes de alimentación + suplementos naturales)</strong>.',
   },
   {
+    id: 4,
     title: "Ritual de Sueño Profundo",
     text: "Dormir bien otra vez.",
   },
   {
+    id: 5,
     title: "Yoga y Movimiento Consciente",
     text: "Liberar la tensión física acumulada con prácticas de movimiento consciente.",
   },
   {
+    id: 6,  
     title: "Meditación y Aceptación Radical",
     text: "Construir el hábito y hacer las paces con tu crítico interno.",
   },
   {
+    id: 7,
     title: "Acompañamiento y Comunidad",
     text: "Soporte por WhatsApp de lunes a viernes.",
   },
   {
+    id: 8,
     title: "Bono",
     text: "Si tomas acción hoy, tendrás acceso a nuestra membresía mensual por 6 meses para una clase de yoga a la semana valorizada en S/ 2.100.",
     highlight: true,
@@ -209,7 +239,7 @@ const cintaItems = [
   "Inicio: 17 de octubre",
   "Clases presenciales (virtual opcional)",
   "Martes 7:30 pm · Jueves 9:00 pm",
-  "Inversión S/950 (antes S/1,250)",
+  // "Inversión S/950 (antes S/1,250)",
   "Pago único o en 3 cuotas",
 ];
 
@@ -295,7 +325,7 @@ const faqs = [
   },
   {
     q: "¿Cómo me inscribo?",
-    a: "Haz clic en “Sí, quiero vivir sin ansiedad”, elige pago único o 3 cuotas y recibirás los datos de acceso inmediatamente.",
+    a: "Haz clic en “Sí, quiero quitar la ansiedad”, elige pago único o 3 cuotas y recibirás los datos de acceso inmediatamente.",
   },
 ];
 ---
@@ -394,6 +424,9 @@ const faqs = [
               disableremoteplayback
               aria-label="Video principal del programa"
             ></video>
+            <div class="hero__progress" aria-hidden="true">
+              <div class="hero__progress-bar"></div>
+            </div>
             <button
               type="button"
               class="hero__unmute"
@@ -406,20 +439,13 @@ const faqs = [
 
           <a
             class="btn btn--primary btn--wide reveal reveal--delay-3"
-            href={checkoutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={ofertaAnchor}
           >
-            Sí, Quiero inscribirme con descuento
+            Sí, quiero quitar la ansiedad
           </a>
           <p class="hero__secondary reveal reveal--delay-3">
             ¿Tienes dudas?
-            <a
-              class="link-whatsapp"
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a class="link-whatsapp" href={ofertaAnchor}>
               Agenda una llamada de 15 minutos conmigo
             </a>
           </p>
@@ -551,6 +577,23 @@ const faqs = [
               </div>
             </div>
           </div>
+
+          <div class="mentora__trayectoria" aria-labelledby="mentora-formacion-title">
+            <div class="mentora__trayectoria-sep" aria-hidden="true"></div>
+            <p id="mentora-formacion-title" class="mentora__trayectoria-titulo">
+              Formación certificada
+            </p>
+            <div class="mentora__credenciales mentora__credenciales--formacion">
+              {
+                mentoraFormacion.map((item) => (
+                  <div class="mentora__cert">
+                    <div class="mentora__cert-titulo">{item.titulo}</div>
+                    <p class="mentora__cert-texto">{item.texto}</p>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
         </div>
       </section>
 
@@ -608,7 +651,8 @@ const faqs = [
         </div>
       </aside>
 
-      <!-- 4. ¿PARA QUIÉN ES ESTE CURSO? -->
+      {/*
+      <!-- 4. ¿PARA QUIÉN ES ESTE CURSO? (comentado — reemplazado por "por qué funciona") -->
       <section class="section para-quien" aria-labelledby="para-quien-title">
         <div class="container">
           <h2 id="para-quien-title" class="section__title">
@@ -666,6 +710,40 @@ const faqs = [
           </div>
         </div>
       </section>
+      */}
+
+      <!-- 4. ¿POR QUÉ ESTE PROGRAMA REALMENTE FUNCIONA? -->
+      <section
+        class="section por-que-funciona"
+        aria-labelledby="por-que-funciona-title"
+      >
+        <div class="container container--narrow">
+          <h2 id="por-que-funciona-title" class="section__title">
+            ¿Por qué este programa realmente funciona?
+          </h2>
+          <div class="por-que-funciona__cuadro">
+            <p>
+              En tu cerebro hay una amígdala: detecta el peligro y te prepara
+              para reaccionar, como cuando esquivas un carro en la calle. En la
+              ansiedad, esa misma señal se activa sin peligro real.
+            </p>
+            <p>
+              La meditación la calma y fortalece la corteza prefrontal, la parte
+              que te permite pensar antes de reaccionar. Con práctica, la notas
+              antes de que te controle.
+            </p>
+            <p>
+              También rompe el ciclo de darle vueltas al pasado o al futuro,
+              anclándote en el presente donde el cerebro no puede sostener dos
+              cosas a la vez.
+            </p>
+            <p>
+              Es el mismo principio que usan los estudios clínicos. Y por eso
+              este curso funciona desde las primeras semanas.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <!-- 5. ¿QUÉ INCLUYE? -->
       <section class="section incluye" aria-labelledby="incluye-title">
@@ -680,7 +758,7 @@ const faqs = [
               pilares.map((item) => (
                 <li class={item.highlight ? "incluye__item--bono" : undefined}>
                   <strong>{item.title}</strong>
-                  <span>{item.text}</span>
+                  <span set:html={item.text} />
                 </li>
               ))
             }
@@ -712,7 +790,7 @@ const faqs = [
       >
         <div class="container decision__inner">
           <div class="urgencia">
-            <h2 id="por-que-ahora-title" class="urgencia__title">Por qué ahora</h2>
+            <h2 id="por-que-ahora-title" class="urgencia__title">¿Por qué ahora?</h2>
             <p>
               Esta es la última cohorte del año. Un programa en comunidad
               funciona mejor cuando todas entran juntas, empiezan el mismo día y
@@ -822,11 +900,11 @@ const faqs = [
             ¿Aún tienes dudas?
             <a
               class="link-whatsapp"
-              href={whatsappUrl}
+              href={calendlyUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Agenda una llamada de 15 minutos con el equipo
+              Agenda una llamada de 15 minutos conmigo.
             </a>
           </p>
         </div>
@@ -961,7 +1039,49 @@ const faqs = [
         const initHeroVideo = async () => {
           const heroVideo = document.querySelector("video.hero__video");
           const unmuteBtn = document.querySelector(".hero__unmute");
+          const progressBar = document.querySelector(".hero__progress-bar");
           if (!heroVideo) return;
+
+          let progressRaf = 0;
+          const updateHeroProgress = () => {
+            if (!progressBar) return;
+            const duration = heroVideo.duration;
+            if (!duration || !Number.isFinite(duration) || duration <= 0) {
+              return;
+            }
+            const ratio = Math.min(
+              1,
+              Math.max(0, heroVideo.currentTime / duration)
+            );
+            progressBar.style.width = (ratio * 100).toFixed(2) + "%";
+          };
+
+          const stopProgressLoop = () => {
+            if (progressRaf) {
+              cancelAnimationFrame(progressRaf);
+              progressRaf = 0;
+            }
+          };
+
+          const startProgressLoop = () => {
+            stopProgressLoop();
+            const tick = () => {
+              updateHeroProgress();
+              if (!heroVideo.paused && !heroVideo.ended) {
+                progressRaf = requestAnimationFrame(tick);
+              }
+            };
+            progressRaf = requestAnimationFrame(tick);
+          };
+
+          heroVideo.addEventListener("timeupdate", updateHeroProgress);
+          heroVideo.addEventListener("seeked", updateHeroProgress);
+          heroVideo.addEventListener("loadedmetadata", updateHeroProgress);
+          heroVideo.addEventListener("durationchange", updateHeroProgress);
+          heroVideo.addEventListener("play", startProgressLoop);
+          heroVideo.addEventListener("playing", startProgressLoop);
+          heroVideo.addEventListener("pause", stopProgressLoop);
+          heroVideo.addEventListener("ended", updateHeroProgress);
 
           const poster = pickResponsiveUrl(
             heroVideo,
@@ -1425,7 +1545,7 @@ const faqs = [
   .mentora__name,
   .mentora__stat,
   .incluye__subtitulo,
-  .incluye__list strong,
+  .incluye__list > li > strong,
   .incluye__clases strong,
   .info-strip__value {
     font-family: var(--font-display);
@@ -1477,7 +1597,10 @@ const faqs = [
   .info-strip__label {
     font-family: var(--font-body);
   }
-
+  
+  .mentora__credencial-texto {
+    text-align: justify;
+  }
   p {
     margin: 0 0 1rem;
   }
@@ -1601,7 +1724,27 @@ const faqs = [
     box-shadow: var(--shadow-soft);
   }
 
+  .hero__progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 5;
+    height: 5px;
+    background: rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+  }
+
+  .hero__progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--cta);
+    box-shadow: 0 0 8px rgba(193, 86, 62, 0.55);
+  }
+
   .hero__video {
+    position: relative;
+    z-index: 1;
     width: 100%;
     height: 100%;
     display: block;
@@ -1617,7 +1760,7 @@ const faqs = [
     position: absolute;
     left: 50%;
     bottom: 0.85rem;
-    z-index: 2;
+    z-index: 6;
     transform: translateX(-50%);
     margin: 0;
     padding: 0.45rem 0.9rem;
@@ -1866,6 +2009,63 @@ const faqs = [
     line-height: 1.45;
   }
 
+  .mentora__trayectoria {
+    margin-top: 2.15rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .mentora__trayectoria-sep {
+    width: 2.75rem;
+    height: 2px;
+    margin: 0 auto 1rem;
+    background: var(--cta);
+    opacity: 0.85;
+  }
+
+  .mentora__trayectoria-titulo {
+    margin: 0 0 1rem;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cta);
+  }
+
+  .mentora__credenciales--formacion {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+    text-align: left;
+  }
+
+  /* Móvil: mismo contenido, menos “peso” tipográfico que las métricas */
+  .mentora__cert {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.55rem 0 0.55rem 0.85rem;
+    border-left: 2px solid var(--cta);
+  }
+
+  .mentora__cert-titulo {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.02rem, 3.8vw, 1.12rem);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--cta);
+    text-wrap: balance;
+  }
+
+  .mentora__cert-texto {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.4;
+  }
+
   /* —— Testimonios —— */
   .testimonios__grid {
     display: grid;
@@ -1932,6 +2132,28 @@ const faqs = [
     object-fit: cover;
     border-radius: 8px;
     background: transparent;
+  }
+
+  /* —— Por qué funciona —— */
+  .por-que-funciona .section__title {
+    text-align: center;
+    margin-bottom: 1.35rem;
+  }
+
+  .por-que-funciona__cuadro {
+    margin: 0 auto;
+    padding: clamp(1.35rem, 3.5vw, 1.85rem) clamp(1.2rem, 3.2vw, 1.75rem);
+    background: #f7f1e8;
+    border: 1px solid var(--border-strong);
+    border-radius: 0;
+    box-shadow: var(--shadow-soft);
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .por-que-funciona__cuadro p:last-child {
+    margin-bottom: 0;
   }
 
   /* —— Para quién —— */
@@ -2021,11 +2243,18 @@ const faqs = [
     border-radius: 0;
   }
 
-  .incluye__list strong {
+  .incluye__list > li > strong {
     font-family: var(--font-body);
     font-size: 1.12rem;
     font-weight: 700;
     color: var(--cta);
+  }
+
+  .incluye__list span strong {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 700;
+    color: inherit;
   }
 
   .incluye__list span {
@@ -2034,19 +2263,21 @@ const faqs = [
     line-height: 1.5;
   }
 
-  .incluye__item--bono {
-    background: rgba(193, 86, 62, 0.08);
-    border-color: rgba(193, 86, 62, 0.45);
-    border-left: 3px solid var(--cta);
+  .incluye__list li.incluye__item--bono {
+    padding: 1.55rem 1.5rem;
+    background: var(--cta);
+    border-color: var(--cta);
   }
 
-  .incluye__item--bono strong {
-    font-size: 1.2rem;
+  .incluye__list li.incluye__item--bono > strong {
+    font-size: 1.35rem;
+    color: #f7f1e8;
   }
 
-  .incluye__item--bono span {
-    color: var(--text);
-    font-size: 1.05rem;
+  .incluye__list li.incluye__item--bono span {
+    color: rgba(247, 241, 232, 0.92);
+    font-size: 1.08rem;
+    line-height: 1.55;
   }
 
   .incluye__acordeon {
@@ -2583,6 +2814,40 @@ const faqs = [
     .mentora__photo {
       margin-inline: 0;
       max-width: none;
+    }
+
+    .mentora__credenciales--formacion {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.25rem;
+      align-items: stretch;
+    }
+
+    .mentora__trayectoria {
+      margin-top: 2.5rem;
+    }
+
+    .mentora__trayectoria-titulo {
+      margin-bottom: 1.5rem;
+      font-size: 0.78rem;
+    }
+
+    .mentora__cert {
+      height: 100%;
+      gap: 0.25rem;
+      padding: 0 0 0 1.05rem;
+      border-left-width: 3px;
+      box-sizing: border-box;
+    }
+
+    .mentora__cert-titulo {
+      min-height: calc(1.22em * 2);
+      font-size: clamp(1.3rem, 2.6vw, 1.55rem);
+      line-height: 1.22;
+    }
+
+    .mentora__cert-texto {
+      font-size: 1rem;
+      line-height: 1.45;
     }
 
     .para-quien__galeria {
