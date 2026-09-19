@@ -1066,11 +1066,114 @@ const faqs = [
           { once: true }
         );
 
+        const trackHeroVideoForGtm = (video) => {
+          const dataLayer = (window.dataLayer = window.dataLayer || []);
+          const fired = {
+            start: false,
+            unmute: false,
+            25: false,
+            50: false,
+            75: false,
+            100: false,
+          };
+          const isHeroInView = () => {
+            const rect = video.getBoundingClientRect();
+            if (!rect.height) return false;
+            const visible =
+              Math.min(rect.bottom, window.innerHeight) -
+              Math.max(rect.top, 0);
+            return visible / rect.height >= 0.45;
+          };
+          let inView = isHeroInView();
+
+          const pushVideoEvent = (eventName, extra) => {
+            dataLayer.push(
+              Object.assign(
+                {
+                  event: eventName,
+                  video_title: "VSL Hero",
+                  video_provider: "html5",
+                  video_muted: !!video.muted,
+                  video_visible: inView && !document.hidden,
+                },
+                extra || {}
+              )
+            );
+          };
+
+          const trackUnmute = () => {
+            if (fired.unmute) return;
+            fired.unmute = true;
+            const duration = video.duration;
+            const percent =
+              duration && Number.isFinite(duration) && duration > 0
+                ? Math.round((video.currentTime / duration) * 100)
+                : 0;
+            pushVideoEvent("video_unmute", {
+              video_percent: percent,
+              video_current_time: Math.round(video.currentTime || 0),
+              video_duration: Math.round(duration || 0),
+            });
+          };
+
+          if ("IntersectionObserver" in window) {
+            const visibility = new IntersectionObserver(
+              (entries) => {
+                const entry = entries[0];
+                inView = !!(
+                  entry &&
+                  entry.isIntersecting &&
+                  entry.intersectionRatio >= 0.45
+                );
+              },
+              { threshold: [0, 0.45, 1] }
+            );
+            visibility.observe(video);
+          }
+
+          video.addEventListener("playing", () => {
+            if (fired.start) return;
+            fired.start = true;
+            pushVideoEvent("video_start", {
+              video_percent: 0,
+              video_current_time: 0,
+              video_duration: Math.round(video.duration || 0),
+            });
+          });
+
+          video.addEventListener("timeupdate", () => {
+            if (document.hidden || !inView || video.paused) return;
+            const duration = video.duration;
+            if (!duration || !Number.isFinite(duration) || duration <= 0) {
+              return;
+            }
+            const percent = (video.currentTime / duration) * 100;
+            [
+              { at: 25, event: "video_progress", key: 25 },
+              { at: 50, event: "video_progress", key: 50 },
+              { at: 75, event: "video_progress", key: 75 },
+              { at: 95, event: "video_complete", key: 100 },
+            ].forEach((mark) => {
+              if (percent < mark.at || fired[mark.key]) return;
+              fired[mark.key] = true;
+              pushVideoEvent(mark.event, {
+                video_percent: mark.key,
+                video_current_time: Math.round(video.currentTime),
+                video_duration: Math.round(duration),
+              });
+            });
+          });
+
+          return { trackUnmute };
+        };
+
         const initHeroVideo = async () => {
           const heroVideo = document.querySelector("video.hero__video");
           const unmuteBtn = document.querySelector(".hero__unmute");
           const progressBar = document.querySelector(".hero__progress-bar");
           if (!heroVideo) return;
+
+          const heroGtm = trackHeroVideoForGtm(heroVideo);
 
           let progressRaf = 0;
           const updateHeroProgress = () => {
@@ -1169,6 +1272,7 @@ const faqs = [
             }
             hideUnmute();
             removeUnlockListeners();
+            heroGtm.trackUnmute();
           };
 
           const enableGestureUnlock = () => {
