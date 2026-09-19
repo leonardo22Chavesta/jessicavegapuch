@@ -2,6 +2,8 @@
 const whatsappUrl =
   "https://wa.me/+51904201674?text=Hola%2C%20tengo%20dudas%20sobre%20el%20programa%20De%20la%20Ansiedad%20a%20la%20Calma";
 const checkoutUrl = "https://mpago.la/2L6fPYD";
+/** Google Tag Manager. Pega el ID del contenedor (formato GTM-XXXXXXX). */
+const gtmId = "GTM-K8BWV82B";
 /** Agenda / booking (15 min). */
 const calendlyUrl =
   "https://link.yogaoclonazepam.com/widget/booking/dbY9KgcEkhy5CfzsHTHA";
@@ -333,6 +335,22 @@ const faqs = [
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    {
+      gtmId && (
+        <script is:inline define:vars={{ gtmId }}>
+          (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+            var f = d.getElementsByTagName(s)[0],
+              j = d.createElement(s),
+              dl = l != "dataLayer" ? "&l=" + l : "";
+            j.async = true;
+            j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+            f.parentNode.insertBefore(j, f);
+          })(window, document, "script", "dataLayer", gtmId);
+        </script>
+      )
+    }
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
@@ -373,6 +391,19 @@ const faqs = [
     </noscript>
   </head>
   <body>
+    {
+      gtmId && (
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            height="0"
+            width="0"
+            style="display:none;visibility:hidden"
+            title="Google Tag Manager"
+          />
+        </noscript>
+      )
+    }
     <div class="cinta-spacer" aria-hidden="true"></div>
     <div class="cinta" role="presentation" aria-hidden="true">
       <div class="cinta__track">
@@ -444,7 +475,7 @@ const faqs = [
           </a>
           <p class="hero__secondary reveal reveal--delay-3">
             ¿Tienes dudas?
-            <a class="link-whatsapp" href={ofertaAnchor}>
+            <a class="link-whatsapp" href={calendlyUrl} target="_blank" rel="noopener">
               Agenda una llamada de 15 minutos conmigo
             </a>
           </p>
