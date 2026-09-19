@@ -1,11 +1,10 @@
 ---
 const whatsappUrl =
   "https://wa.me/+51904201674?text=Hola%2C%20tengo%20dudas%20sobre%20el%20programa%20De%20la%20Ansiedad%20a%20la%20Calma";
-const checkoutUrl =
-  "https://www.mercadopago.com.pe/checkout/v1/payment/redirect/65f13ed3-e233-4009-ac26-d5cb6a049023/payment-option-form/?source=link&router-request-id=b4c102a0-4fa0-4547-ab00-114f8e449422&preference-id=3693503476-47e091d0-4a92-4e3f-9816-7a61faab7bfc&p=32bb6a20da7f691a41af57b5f28686dc";
+const checkoutUrl = "https://mpago.la/2L6fPYD";
 /** Agenda / booking (15 min). */
 const calendlyUrl =
-  "https://link.rodrigoalvarezaguilar.com/widget/booking/dbY9KgcEkhy5CfzsHTHA";
+  "https://link.yogaoclonazepam.com/widget/booking/dbY9KgcEkhy5CfzsHTHA";
 const ofertaAnchor = "#reservar";
 
 /** Comprime y adapta videos de Cloudinary para carga más rápida. */
@@ -2341,17 +2340,20 @@ const faqs = [
 
   /* —— Tarjeta de oferta —— */
   .oferta-wrap {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: min(100%, 620px);
     margin: 0 auto;
+    padding-top: 1rem;
   }
 
   .oferta {
     width: 100%;
     margin: 0;
-    padding: clamp(2rem, 4.5vw, 2.85rem) clamp(1.35rem, 3.5vw, 2.35rem);
+    padding: clamp(2.35rem, 5vw, 3.15rem) clamp(1.35rem, 3.5vw, 2.35rem)
+      clamp(2rem, 4.5vw, 2.85rem);
     background: #f7f1e8;
     border: 2px solid var(--cta);
     border-radius: 0;
@@ -2366,16 +2368,23 @@ const faqs = [
   }
 
   .oferta__badge {
+    position: absolute;
+    top: calc(1rem + 1px);
+    left: 50%;
+    z-index: 2;
     display: inline-block;
-    margin: 0 0 0.85rem;
+    margin: 0;
     padding: 0.4rem 0.9rem;
     font-family: var(--font-body);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    white-space: nowrap;
     color: #fff;
     background: var(--cta);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 6px 14px rgba(193, 86, 62, 0.28);
   }
 
   .oferta__titulo {

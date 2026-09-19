@@ -1,0 +1,324 @@
+# Plantilla Landing VSL — Sistema de Diseño y Reglas de Replicación
+
+Skill reutilizable para construir landings Astro idénticas a este proyecto (Neurociencia / VSL de conversión). Stack: Astro 5, CSS global embebido en `src/pages/index.astro` (sin Tailwind, sin componentes externos). Una sola página autocontenida.
+
+---
+
+## 1. Identidad Visual y Sistema de Estilos Base
+
+### 1.1 Paleta exacta (CSS variables en `:root`)
+
+| Token | Valor | Uso |
+|-------|--------|-----|
+| `--bg` | `#ede6da` | Fondo base del body (capa del gradiente) |
+| `--cta` | `#c1563e` | Acento: botones, bordes laterales, labels, precios, checks, cinta |
+| `--text` | `#222222` | Texto principal |
+| `--text-muted` | `rgba(34, 34, 34, 0.72)` | Texto secundario |
+| `--surface` | `rgba(255, 255, 255, 0.42)` | Fondos semitransparentes (FAQ, listas, acordeones) |
+| `--border` | `rgba(34, 34, 34, 0.18)` | Bordes suaves |
+| `--border-strong` | `rgba(34, 34, 34, 0.28)` | Bordes más marcados |
+| Superficie cálida | `#f7f1e8` | Cards info-strip, items incluye, tarjeta oferta |
+| Hover CTA | `#a94732` | Estado hover de `.btn--primary` |
+| Cinta texto | `#f7f1e8` | Texto sobre fondo `--cta` |
+| WhatsApp | `#25d366` | Botón flotante |
+
+**Fondo del body (no flat):**
+```css
+background:
+  radial-gradient(ellipse 80% 50% at 50% -10%, rgba(193, 86, 62, 0.12), transparent 55%),
+  linear-gradient(180deg, #f3ede3 0%, var(--bg) 28%, #e8dfd0 100%);
+```
+
+### 1.2 Tipografía
+
+- **Display / títulos:** `"Cormorant Garamond", Georgia, serif` → `--font-display`
+  - Pesos Google Fonts: 500, 600, 700 + itálica 500
+  - Usar en: `h1–h3`, `.section__title`, `.mentora__name`, `.mentora__stat`, frases manifiesto, nombres de testimonio, valor info-strip, texto garantía
+- **Body / UI:** `"Outfit", sans-serif` → `--font-body`
+  - Pesos: 400, 500, 600, 700
+  - Usar en: párrafos, botones, badges, labels, listas, FAQ
+
+**Tamaños clave (clamp):**
+- Hero H1: `clamp(1.55rem, 6.2vw, 2.15rem)` → sm+ más grande; desktop `min(2.85rem, calc((100vw - 3rem) / 26))` con líneas `nowrap`
+- Section H2: `clamp(1.75rem, 3.2vw, 2.35rem)`
+- Mentora nombre: `clamp(2rem, 4vw, 2.65rem)`
+- Mentora cifra: `clamp(1.45rem, 2.8vw, 1.75rem)` color `--cta`
+- Body base: `1.05rem` / `line-height: 1.65`
+- Manifiesto itálica: `clamp(1.15rem, 3.2vw, 1.4rem)`
+
+**Carga de fuentes (head):** preconnect + stylesheet con `media="print" onload="this.media='all'"` + `<noscript>` fallback. Familias exactas:
+`Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500` y `Outfit:wght@400;500;600;700`.
+
+### 1.3 Espaciado y layout
+
+- `--max: 1100px` · `--narrow: 720px` · `--radius: 4px` (casi sin redondeo en UI)
+- `.container`: `width: min(100% - 2.75rem, var(--max))`
+- `.section`: `padding: 2.5rem 0` (compacto; no padding enorme)
+- Márgenes de título de sección: `margin-bottom: 1.15rem`
+- Bordes de acento: `border-left: 3px solid var(--cta)` en credenciales, info-strip, para-quién, garantía, bono
+- Sombras: `--shadow-soft: 0 18px 40px rgba(34, 34, 34, 0.08)`; CTA `0 10px 24px rgba(193, 86, 62, 0.28)`
+- Evitar cards genéricas con sombra+radius grandes; preferir superficies planas con borde y acento lateral
+
+### 1.4 Principios UI/UX (obligatorios)
+
+1. **Minimalista y profesional:** cero emojis; iconografía solo SVG stroke lineal (stroke-width ~1.75).
+2. **Mobile-first:** grids 1 col → 2 (640px) → 3/4 (900px).
+3. **Una composición por sección:** un título, un propósito, un bloque de soporte.
+4. **Sin dashboard clutter:** no stats strips genéricos, no pills clusters, no badges flotantes sobre video.
+5. **Marca/CTA terracotta** (`#c1563e`) sobre fondo papel cálido; no purple/indigo, no dark mode por defecto.
+6. **Accesibilidad:** `lang="es"`, `aria-labelledby` en secciones, `rel="noopener noreferrer"` en externos.
+7. **Motion sobrio:** `reveal-up` en hero (delays 0 / 0.1 / 0.22 / 0.34s); cinta marquee; pulse WhatsApp. Respetar `prefers-reduced-motion`.
+8. **Datos de contenido** como constantes TS al tope del `.astro`; HTML solo maqueta.
+
+---
+
+## 2. Catálogo de Secciones y Maquetación
+
+Orden fijo de la página (replicar esta secuencia):
+
+```
+Cinta fija (marquee)
+→ Hero VSL + CTA + info-strip
+→ Manifiesto (frase itálica)
+→ Mentora / Autor
+→ Manifiesto
+→ Testimonios (grid videos 9:16)
+→ Manifiesto
+→ Para quién (+ galería)
+→ Qué incluye (+ acordeón clases)
+→ Divider
+→ Decisión (urgencia + oferta/checkout + WhatsApp)
+→ FAQ
+→ WhatsApp flotante
+```
+
+### 2.1 Cinta superior (`.cinta`)
+
+- Fija `top: 0`, altura `--cinta-h: 2.15rem`, fondo `--cta`.
+- Track duplicado `[0,1].map` para loop infinito `cinta-scroll` 38s linear.
+- Items uppercase, bold, letter-spacing 0.06em; separador `•`.
+- Spacer `.cinta-spacer` del mismo alto para no tapar el hero.
+
+### 2.2 Hero / Sección principal
+
+**Estructura (centrada, columna):**
+1. `.badge` — label uppercase con borde/fondo tint CTA (ej. nombre del programa)
+2. `h1.hero__title` — 1–2 `.hero__title-line` (display serif, text-wrap balance)
+3. `.hero__video-wrap` — aspect-ratio **16/9**, max-width **850px**, border-radius **16px**, shadow soft
+4. `video.hero__video` — ver sección 3
+5. Botón opcional `.hero__unmute` (“Toca para oír”) si autoplay con sonido falla
+6. `a.btn.btn--primary.btn--wide` → URL checkout
+7. `.hero__secondary` — enlace WhatsApp `.link-whatsapp`
+8. `.info-strip` — 4 datos (Duración / Inicio / Clases / Horario): icono SVG + label uppercase CTA + value display
+
+**Botón primario:** padding `0.95rem 1.5rem`, font-weight 700, fondo blanco, fondo `--cta`, `btn--wide` = `width: min(100%, 520px)`.
+
+### 2.3 Manifiesto (entre secciones)
+
+- `.manifiesto` con `.container--narrow`
+- `.manifiesto__frase`: serif itálica, bordes top/bottom 1px, padding vertical ~1.15rem, centrado
+- Una sola frase por bloque; no cards
+
+### 2.4 Autor / Mentora (`.mentora`)
+
+**Jerarquía:**
+- Label `.mentora__label` — uppercase, letter-spacing 0.14em, color CTA (“Quién te va a formar”)
+- `h2.mentora__name` — nombre a tamaño hero-secundario
+- Grid: foto + contenido; en ≥900px **2 columnas** (foto | texto)
+
+**Foto:**
+- `<picture>` con webp `srcset` (sm + full) + fallback jpeg
+- Aspect-ratio **4/5**, max-width 420px móvil, `loading="lazy"`
+
+**Credenciales (`.mentora__credencial`):**
+- Columna vertical, gap ~1.15rem
+- Cada bloque: `border-left: 3px solid var(--cta)`, padding-left ~1.05rem
+- **Cifra grande arriba** (`.mentora__stat`, color CTA, display)
+- **Descripción abajo** (`.mentora__credencial-texto`, muted, body)
+
+### 2.5 Testimonios
+
+- Título centrado `.section__title`
+- Grid 2 col móvil → 3 col ≥640px; max-width 920px
+- Cada item: `figure.testimonio-media` aspect **9/16**, nombre overlay itálica blanca con gradiente superior
+- `video.lazy-video` con controls, muted, loop, playsinline, preload none
+
+### 2.6 Para quién
+
+- Lista con check SVG CTA + texto; items con surface + borde + acento izquierdo
+- ≥640px: 2 columnas
+- Galería 2×2 → 4 cols ≥900px; imágenes webp+jpeg, aspect 4/3
+
+### 2.7 Qué incluye
+
+- Título programa + subtítulo “El programa Incluye”
+- Lista de pilares: strong título CTA + span descripción; fondo `#f7f1e8`
+- Item bono: clase `--bono`, tint CTA, borde izquierdo acentuado
+- `<details>` acordeón clase-por-clase con `+`/`−` en summary
+
+### 2.8 Tarjeta de Oferta / Checkout (`.oferta`)
+
+Dentro de `.decision`: bloque urgencia centrado → `.oferta-wrap` → CTA secundario WhatsApp.
+
+**Contenedor `.oferta`:**
+- Ancho max ~620px, padding clamp generoso
+- Fondo `#f7f1e8`, **borde 2px solid `--cta`**, radius 0
+- Sombra: `0 22px 48px rgba(193,86,62,0.18)` + ring `0 0 0 6px rgba(193,86,62,0.06)`
+
+**Jerarquía interna (orden estricto):**
+1. Badge externo `.oferta__badge` — “Oferta por tiempo limitado”, fondo CTA, texto blanco uppercase
+2. Header: `.oferta__titulo` uppercase body CTA
+3. **Inversión:** precio tachado (antes) — precio enorme ahora (`clamp(3.4rem, 11vw, 4.5rem)`, weight 800) + línea “Inversión: … Pago único o en N cuotas”
+4. Lista beneficios con check SVG; item bono con strong “Bono:”
+5. **Garantía** `.oferta__garantia` — label uppercase + cita itálica display; fondo tint + borde izquierdo CTA
+6. **CTA principal** `.btn.btn--primary.oferta__cta` full-width (“Reserva tu cupo ahora”) → checkout
+7. Línea confianza (pago / garantía) + pie cuotas
+
+### 2.9 FAQ + WhatsApp flotante
+
+- FAQ en `container--narrow`; cada item `<details class="faq__item">`
+- Float: fijo bottom-right, 3.5rem, círculo verde WhatsApp, SVG path estándar, `float-pulse`
+
+---
+
+## 3. Arquitectura y Rendimiento Multimedia (Video & Assets)
+
+### 3.1 Carpetas de assets (public)
+
+```
+/public/portadas/     → posters WebP del hero y testimonios
+  Video_Funel.webp / Video_Funel-sm.webp
+  {id}.webp / {id}-sm.webp
+/public/imagenes/     → foto mentora + galería (webp + jpeg fallback)
+```
+
+**Regla de portadas:** Siempre servir posters locales desde `/portadas/` en el atributo `poster` (y `data-poster` / `data-poster-mobile`). Nunca depender del frame remoto como primera pintura. Preload en `<head>` del poster hero (móvil + desktop) con `fetchpriority="high"`.
+
+### 3.2 Optimización Cloudinary (constante helper)
+
+Transformar URLs insertando tras `/video/upload/`:
+`w_{width},c_limit,{q_auto|q_auto:eco|q_auto:low},f_auto/`
+
+- Hero desktop: width 960
+- Hero móvil: width 720, eco
+- Testimonios: 480 eco / 360 low
+
+Preconnect + dns-prefetch a `https://res.cloudinary.com`.
+
+### 3.3 Configuración estricta de `<video>`
+
+**Hero (`video.hero__video`):**
+```html
+<video
+  class="hero__video"
+  data-src={heroVideoSrc}
+  data-src-mobile={heroVideoSrcMobile}
+  data-poster={heroPoster}
+  data-poster-mobile={heroPosterMobile}
+  poster={heroPosterMobile}
+  autoplay
+  loop
+  playsinline
+  webkit-playsinline
+  preload="none"
+  disablepictureinpicture
+  disableremoteplayback
+></video>
+```
+- No poner `src` en HTML; el script asigna `src` (remoto o blob cache).
+- `pointer-events: none` en CSS del hero video.
+
+**Testimonios (`video.lazy-video`):**
+```html
+<video
+  class="lazy-video"
+  data-src={...}
+  data-src-mobile={...}
+  data-poster={...}
+  data-poster-mobile={...}
+  data-start-at={opcional}
+  poster={posterSm}
+  controls
+  muted
+  loop
+  playsinline
+  webkit-playsinline
+  preload="none"
+></video>
+```
+
+### 3.4 Script base (inline `is:inline`) — Lazy load + play/pause
+
+Comportamiento obligatorio a replicar:
+
+1. `history.scrollRestoration = "manual"` + reset scroll al load/pageshow.
+2. `pickResponsiveUrl(el, data-src, data-src-mobile)` con breakpoint **640px**.
+3. Cache API opcional (`caches.open`) para blob URLs de video (no bloquea play).
+4. **Hero:** asignar poster responsive → src (cache hit o remoto) → intentar play con sonido; si falla, muted + botón “Toca para oír” + unlock por gesture.
+5. **Lazy videos:**
+   - Asignar posters al instante.
+   - `IntersectionObserver` con `rootMargin` ~400–480px, `threshold: 0.05`.
+   - Al intersectar: adjuntar `src` desde `data-src` / `data-src-mobile`, `preload="auto"`, play; al salir: `pause()`.
+   - Warm secuencial tras `canplay` del hero (`requestIdleCallback`), límite 2 en conexiones lentas.
+   - Soporte `data-start-at` (seek al metadata).
+6. Fallback sin IntersectionObserver: attach + play a todos.
+
+Fragmento canónico del observer:
+
+```js
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      const video = entry.target;
+      if (entry.isIntersecting) {
+        video.dataset.warmed = "1";
+        attachSource(video, { play: true });
+      } else {
+        video.pause();
+      }
+    });
+  },
+  {
+    root: null,
+    rootMargin: isMobileViewport() ? "400px 0px" : "480px 0px",
+    threshold: 0.05,
+  }
+);
+videos.forEach((video) => observer.observe(video));
+```
+
+### 3.5 Imágenes estáticas
+
+- Siempre `<picture>`: source webp `srcset` (sm + full) + `img` jpeg fallback.
+- `loading="lazy"` `decoding="async"` excepto poster hero (preload).
+- Dimensiones width/height explícitas para CLS.
+
+---
+
+## 4. Arquitectura de Archivos del Proyecto
+
+```
+/
+├── .cursorrules          ← este skill
+├── package.json          ← dependency: astro ^5
+├── astro.config.mjs
+├── public/
+│   ├── portadas/         ← posters video
+│   ├── imagenes/         ← fotos mentora/galería
+│   └── favicon.svg
+└── src/pages/index.astro ← TODA la landing: frontmatter data + HTML + <script> + <style is:global>
+```
+
+No crear componentes Astro separados salvo que el usuario lo pida. Preferir un único `index.astro` autocontenido como esta plantilla.
+
+Constantes tipadas al inicio del frontmatter:
+- URLs: `whatsappUrl`, `checkoutUrl`
+- Arrays: programaInfo, testimonios, mentoraMetricas, paraQuien, pilares, ofertaBeneficios, cintaItems, clasesPrograma, faqs
+- Helpers: `optimizeCloudinaryVideo`
+
+---
+
+## 5. Instrucción de Automatización Futura
+
+Cada vez que el usuario pida **"Crea una landing con esta plantilla"**, genera la estructura Astro utilizando este mismo sistema de diseño, adaptando **únicamente** los textos y URLs que el usuario proporcione (nombre del programa, headline, mentora, métricas, beneficios, precios, fechas, FAQs, enlaces de checkout/WhatsApp, IDs/URLs de video Cloudinary y rutas de posters/imágenes en `/public/portadas/` e `/public/imagenes/`). Conserva CSS variables, clases BEM, orden de secciones, reglas de `<video>`, script de IntersectionObserver y principios UI/UX de este archivo sin desviaciones estéticas.
+)
